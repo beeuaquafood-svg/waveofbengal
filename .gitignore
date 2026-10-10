@@ -1,0 +1,23 @@
+# Node
+node_modules/
+.next/
+.vercel/
+
+# Python
+__pycache__/
+*.pyc
+.env
+.venv/
+*.db
+
+# Env files
+.env.local
+.env*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/

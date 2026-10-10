@@ -1,0 +1,173 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-sky-light: #f0f9ff;
+  /* Ice Blue - Main Background */
+  --color-sky-blue: #e0f2fe;
+  /* Sky Blue - Cards/Sections */
+  --color-oceanic-blue: #38bdf8;
+  /* Sky Blue - Buttons/Highlights */
+  --color-ocean-deep: #0a0a0a;
+  /* Obsidian Black - Main Text/Headings */
+  --color-ocean-muted: #525252;
+  /* Dark Gray - Secondary Text */
+  --color-gold: #f59e0b;
+  /* Amber Yellow - Accent */
+  --color-gold-light: #fbbf24;
+  /* Light Amber - Hover Accent */
+  --color-wob-green: #059669;
+  /* Kept for sustainability badges */
+
+  --font-space: var(--font-space);
+  --font-heading: var(--font-heading), "Georgia", serif;
+  --font-body: var(--font-space), sans-serif;
+  --font-accent: var(--font-space), sans-serif;
+  --font-landing-heading: var(--font-playfair), "Georgia", serif;
+  --font-landing-body: var(--font-inter), sans-serif;
+  --font-cinzel: var(--font-cinzel), "Georgia", serif;
+  --font-fraunces: var(--font-fraunces), "Georgia", serif;
+  --font-playfair: var(--font-playfair), "Georgia", serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-sky-light);
+    color: var(--color-ocean-deep);
+  }
+
+  h1 {
+    font-family: var(--font-cinzel);
+    color: var(--color-ocean-deep);
+  }
+
+  h2,
+  h3 {
+    font-family: var(--font-fraunces);
+    color: var(--color-ocean-deep);
+  }
+
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-playfair);
+    color: var(--color-ocean-deep);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) skewX(12deg);
+  }
+
+  100% {
+    transform: translateX(200%) skewX(12deg);
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    /* Responsive sizing handled by tailwind layout, removed hardcoded 240/360 width and height to maintain reusability in different contexts */
+    background: rgba(255, 255, 255, 0.17);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.5s ease;
+  }
+
+  .glass-card:hover {
+    transform: translateY(-8px);
+    box-shadow:
+      0 16px 48px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.8),
+        transparent);
+  }
+
+  .glass-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(180deg,
+        rgba(255, 255, 255, 0.8),
+        transparent,
+        rgba(255, 255, 255, 0.3));
+  }
+
+  /* ═══ Golden Shiny Button ═══ */
+  .btn-gold {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #c5a061, #d4b070, #c5a061);
+    color: #0a1628;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(197, 160, 97, 0.25);
+  }
+
+  .btn-gold::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 40%;
+    height: 200%;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent);
+    transform: skewX(-15deg);
+    transition: none;
+    opacity: 0;
+  }
+
+  .btn-gold:hover {
+    background: linear-gradient(135deg, #d4b070, #e0c080, #d4b070);
+    box-shadow: 0 8px 30px rgba(197, 160, 97, 0.45), 0 0 20px rgba(197, 160, 97, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .btn-gold:hover::after {
+    opacity: 1;
+    animation: shimmer 0.8s ease forwards;
+  }
+
+  .btn-gold:active {
+    transform: translateY(0) scale(0.97);
+    box-shadow: 0 2px 10px rgba(197, 160, 97, 0.3);
+  }
+
+  /* ═══ Cinematic Lighthouse Hero ═══ */
+  .hero-lighthouse {
+    background-color: #0a1a2e;
+  }
+
+  .hero-lighthouse-img {
+    filter: contrast(1.1) saturate(1.15) brightness(0.95);
+  }
+}
