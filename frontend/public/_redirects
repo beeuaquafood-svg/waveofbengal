@@ -1,1 +1,2 @@
+# Single rule: send all non-matching routes to index.html
 /* /index.html 200
