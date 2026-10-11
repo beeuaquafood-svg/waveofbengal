@@ -37,7 +37,7 @@ export function ProductCard({ product }) {
           alt={product.name}
           fill
           sizes="(max-width: 600px) 90vw, (max-width: 900px) 45vw, 30vw"
-          unoptimized
+          unoptimized={!product.image?.startsWith("/")}
         />
         <span className="product-tag">{product.category}</span>
         <span className="product-arrow" aria-hidden="true">
@@ -113,7 +113,7 @@ export default function Shop({ home = false }) {
               alt="Raw Black Tiger Prawns arranged with herbs and citrus"
               fill
               priority
-              unoptimized
+
               sizes="(max-width: 760px) 100vw, 55vw"
             />
             <div className="hero-caption">
@@ -228,7 +228,7 @@ export default function Shop({ home = false }) {
               src="/images/skewers.jpeg"
               alt="Prawn skewers ready for cooking"
               fill
-              unoptimized
+
               sizes="(max-width: 760px) 100vw, 50vw"
             />
           </div>

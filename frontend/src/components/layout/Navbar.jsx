@@ -12,9 +12,10 @@ export default function Navbar() {
   const { cartCount } = useCart();
   const pathname = usePathname();
   const links = [
-    ["Shop prawns", "/products"],
-    ["Our story", "/our-story"],
-    ["Our standards", "/certifications"],
+    ["Our Catch", "/products"],
+    ["Our Story", "/our-story"],
+    ["Sustainability", "/sustainability"],
+    ["Certifications", "/certifications"],
   ];
   return (
     <header className="store-header">
@@ -88,7 +89,7 @@ export default function Navbar() {
         >
           {[
             ...links,
-            ["Sustainability", "/sustainability"],
+            ["Contact Us", "/contact"],
             [user ? "My account" : "Sign in", user ? "/account" : "/login"],
           ].map(([label, href]) => (
             <Link key={href} href={href} onClick={() => setOpen(false)}>

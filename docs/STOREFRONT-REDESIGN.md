@@ -44,3 +44,15 @@ npm run test:storefront
 Five Node regression tests cover variant separation, restored bag validation, invalid additions, catalogue completeness and shared totals. ESLint passes for the changed storefront/auth/context files. The full repository lint command still reports existing errors in untouched admin and legacy components/hooks; they are not hidden or suppressed by this PR.
 
 Browser checks cover Chromium. Real-device Safari/Firefox and live authentication/payment services have not been verified.
+
+## Complete support experience (follow-up)
+
+Added `/faq`, `/shipping` and `/contact`, with the same typography, spacing and responsive layout as the storefront. The footer includes Our Catch, Our Story, Sustainability, Certifications, FAQ, Shipping & Returns and Contact Us, plus an explicit-consent newsletter form. All links use relative routes.
+
+The contact and newsletter forms submit to `/api/support`. Set `GMAIL_USER`, `GMAIL_PASS` and optionally `SUPPORT_EMAIL` (defaults to `GMAIL_USER`) for delivery to the store's inbox. Newsletter submission sends an **opt-in request**, not an automatic mailing-list subscription. Staff must confirm subscriptions using the chosen mailing platform and honour unsubscribe requests before sending campaigns. No visitor email is automatically sent by this endpoint. Without credentials, the endpoint returns 503 and the form retains entered data with an honest error. Validation, a honeypot, same-origin checks and bounded per-instance/email attempt tracking are included. Configure a shared production ingress rate limiter before exposing a high-traffic email endpoint.
+
+Support copy does not invent delivery dates, return windows, refund guarantees or contact phone numbers. The owner should approve the final commercial policy before accepting orders.
+
+Local photography now uses Next's responsive image optimization on the home, catalogue, product, bag, story, sustainability and sign-in screens. Remote/admin-uploaded images retain their previous compatibility path. The large original skewer image no longer needs to be delivered at full size to a phone.
+
+Validation now covers 14 routes at five widths (70 layout checks), FAQ disclosure, a failed contact submission preserving input, and a successful newsletter request using mocked transport. No real emails or subscriptions are sent in testing. Seven Node tests cover commerce and support input validation.

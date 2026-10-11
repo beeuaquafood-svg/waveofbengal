@@ -21,7 +21,7 @@ export default function Sustainability() {
           alt="Black Tiger Prawns, a Bengal favourite"
           fill
           priority
-          unoptimized
+
           sizes="100vw"
         />
       </div>
