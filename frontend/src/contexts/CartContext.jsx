@@ -1,81 +1,62 @@
-'use client'
-
-import { createContext, useContext, useState, useEffect } from 'react';
-
+"use client";
+import { createContext, useContext, useState, useEffect } from "react";
+import { addLine, restoreCart } from "@/lib/cart";
 const CartContext = createContext();
-
 export function CartProvider({ children }) {
-    const [cart, setCart] = useState([]);
-    const [isCartOpen, setIsCartOpen] = useState(false);
-
-    // Initialize from localStorage on mount
-    useEffect(() => {
-        const savedCart = localStorage.getItem('wob_cart');
-        if (savedCart) {
-            try {
-                setCart(JSON.parse(savedCart));
-            } catch (e) {
-                console.error("Failed to parse cart from local storage", e);
-            }
-        }
-    }, []);
-
-    // Save to localStorage on changes
-    useEffect(() => {
-        localStorage.setItem('wob_cart', JSON.stringify(cart));
-    }, [cart]);
-
-    const addToCart = (product, quantity = 1) => {
-        setCart(prevCart => {
-            const existingItem = prevCart.find(item => item.id === product.id);
-            if (existingItem) {
-                return prevCart.map(item =>
-                    item.id === product.id
-                        ? { ...item, quantity: item.quantity + quantity }
-                        : item
-                );
-            }
-            return [...prevCart, { ...product, quantity }];
-        });
-        setIsCartOpen(true); // Auto open cart when adding
-    };
-
-    const removeFromCart = (productId) => {
-        setCart(prevCart => prevCart.filter(item => item.id !== productId));
-    };
-
-    const updateQuantity = (productId, quantity) => {
-        if (quantity < 1) {
-            removeFromCart(productId);
-            return;
-        }
-        setCart(prevCart => prevCart.map(item =>
-            item.id === productId ? { ...item, quantity } : item
-        ));
-    };
-
-    const clearCart = () => {
-        setCart([]);
-    };
-
-    const cartTotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-    const cartCount = cart.reduce((count, item) => count + item.quantity, 0);
-
-    return (
-        <CartContext.Provider value={{
-            cart,
-            addToCart,
-            removeFromCart,
-            updateQuantity,
-            clearCart,
-            cartTotal,
-            cartCount,
-            isCartOpen,
-            setIsCartOpen
-        }}>
-            {children}
-        </CartContext.Provider>
+  const [cart, setCart] = useState([]);
+  const [ready, setReady] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  useEffect(() => {
+    try {
+      // Hydrate before persisting so an initial empty render cannot erase the bag.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCart(restoreCart(JSON.parse(localStorage.getItem("wob_cart"))));
+    } catch {
+      /* Storage can be unavailable in private browsing. */
+    }
+    setReady(true);
+  }, []);
+  useEffect(() => {
+    if (ready) {
+      try {
+        localStorage.setItem("wob_cart", JSON.stringify(cart));
+      } catch {
+        /* Keep the in-memory bag usable. */
+      }
+    }
+  }, [cart, ready]);
+  const addToCart = (product, quantity = 1) =>
+    setCart((current) => addLine(current, product, quantity));
+  const removeFromCart = (key) =>
+    setCart((current) => current.filter((item) => item.key !== key));
+  const updateQuantity = (key, quantity) => {
+    if (!Number.isInteger(quantity) || quantity < 1 || quantity > 99) return;
+    setCart((current) =>
+      current.map((item) => (item.key === key ? { ...item, quantity } : item)),
     );
+  };
+  const cartTotal = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
+  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  return (
+    <CartContext.Provider
+      value={{
+        cart,
+        ready,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        clearCart: () => setCart([]),
+        cartTotal,
+        cartCount,
+        isCartOpen,
+        setIsCartOpen,
+      }}
+    >
+      {children}
+    </CartContext.Provider>
+  );
 }
-
 export const useCart = () => useContext(CartContext);
