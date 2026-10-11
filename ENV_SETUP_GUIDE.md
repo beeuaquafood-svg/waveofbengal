@@ -37,6 +37,16 @@ See `frontend/.env.example`
 
 **Note**: Use [Gmail App Password](https://myaccount.google.com/apppasswords), NOT your regular password
 
+### Payment Gateway - Razorpay (REQUIRED for payments)
+See `backend/.env.example` for backend secret
+
+Frontend only needs the public key ID:
+```
+NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_live_TmWeiGhEXd3rkV
+```
+
+**Get from**: https://dashboard.razorpay.com/app/keys
+
 ---
 
 ## Backend Variables
