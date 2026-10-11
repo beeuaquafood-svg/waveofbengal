@@ -121,7 +121,7 @@ export default function AuthForm({ register = false }) {
             alt="Wave of Bengal home"
             width={170}
             height={55}
-            unoptimized
+
           />
         </Link>
         <div className="auth-form">
@@ -333,7 +333,7 @@ export default function AuthForm({ register = false }) {
           src="/images/black%20tiger.jpeg"
           alt="Black Tiger Prawns arranged with fresh herbs"
           fill
-          unoptimized
+
           sizes="50vw"
         />
         <div>

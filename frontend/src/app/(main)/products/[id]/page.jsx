@@ -30,7 +30,7 @@ function Product({ product, related }) {
             alt={product.name}
             fill
             priority
-            unoptimized
+            unoptimized={!product.image?.startsWith("/")}
             sizes="(max-width: 760px) 100vw, 55vw"
           />
           <span className="product-tag">{product.category}</span>

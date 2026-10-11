@@ -67,6 +67,9 @@ const server = spawn(
         "certifications",
         "sustainability",
         "account",
+        "faq",
+        "shipping",
+        "contact",
       ]) {
         const response = await page.goto("http://127.0.0.1:3100/" + route);
         assert.equal(response.status(), 200, route);
@@ -80,7 +83,7 @@ const server = spawn(
         );
         if (
           width === 390 &&
-          ["home", "products/black-tiger-prawns", "login"].includes(route)
+          ["home", "products/black-tiger-prawns", "login", "faq", "shipping", "contact"].includes(route)
         ) {
           await page
             .locator("img")
@@ -144,7 +147,7 @@ const server = spawn(
       ["State", "West Bengal"],
       ["PIN code", "700001"],
     ])
-      await page.getByLabel(label, { exact: true }).fill(value);
+      await page.locator(".delivery-fields").getByLabel(label, { exact: true }).fill(value);
     await page.getByRole("button", { name: "Review order →" }).click();
     await page
       .getByRole("heading", { name: "Online ordering is coming soon." })
@@ -170,9 +173,70 @@ const server = spawn(
       .getByRole("link", { name: "Create an account", exact: true })
       .click();
     await page.waitForURL("**/register?next=%2Fcheckout");
+    await page.goto("http://127.0.0.1:3100/faq");
+    await page
+      .locator("summary").filter({hasText:"Can I choose the pack size?"})
+      .click();
+    assert.ok(
+      await page
+        .getByText("Yes. Choose one of the available weights", { exact: false })
+        .isVisible(),
+    );
+    await page.goto("http://127.0.0.1:3100/contact");
+    await page
+      .locator(".contact-form")
+      .getByLabel("Your name")
+      .fill("Test Customer");
+    await page
+      .locator(".contact-form")
+      .getByLabel("Email address")
+      .fill("test@example.com");
+    await page
+      .getByLabel("Your message")
+      .fill("This is a browser test enquiry.");
+    // Mock transport responses: never send a real enquiry or subscribe an address.
+    await page.route("**/api/support", (route) =>
+      route.fulfill({
+        status: 503,
+        contentType: "application/json",
+        body: JSON.stringify({
+          error:
+            "Our enquiry form is temporarily unavailable. Please try again later.",
+        }),
+      }),
+    );
+    await page.getByRole("button", { name: "Send enquiry →" }).click();
+    await page.getByRole("alert").waitFor();
+    assert.equal(
+      await page
+        .locator(".contact-form")
+        .getByLabel("Email address")
+        .inputValue(),
+      "test@example.com",
+    );
+    await page.unroute("**/api/support");
+    await page.route("**/api/support", (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          message:
+            "Your signup request has been sent. Look out for a subscription confirmation.",
+        }),
+      }),
+    );
+    await page
+      .locator(".newsletter-form")
+      .getByLabel("Email address", { exact: true })
+      .fill("test@example.com");
+    await page.getByRole("checkbox").check();
+    await page.getByRole("button", { name: "Join →" }).click();
+    await page
+      .getByText("Your signup request has been sent.", { exact: false })
+      .waitFor();
     assert.deepEqual(errors, []);
     console.log(
-      "PASS: 55 responsive route checks (375–1440px), mobile menu, filters/search, pack variants, persisted bag, delivery review, invalid product, auth return URL; no page errors.",
+      "PASS: 70 responsive route checks (375–1440px), mobile menu, filters/search, pack variants, persisted bag, delivery review, invalid product, auth return URL; no page errors.",
     );
   } finally {
     await browser.close();

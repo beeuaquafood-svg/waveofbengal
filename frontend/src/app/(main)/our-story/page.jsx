@@ -96,7 +96,7 @@ export default function Story() {
           alt="Black Tiger Prawns with herbs and citrus"
           fill
           priority
-          unoptimized
+
           sizes="100vw"
         />
       </div>

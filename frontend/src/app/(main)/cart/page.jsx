@@ -46,7 +46,9 @@ export default function Cart() {
                     alt={item.name}
                     fill
                     sizes="140px"
-                    unoptimized
+                    unoptimized={Boolean(
+                      item.image && !item.image.startsWith("/"),
+                    )}
                   />
                 </Link>
                 <div className="bag-item-info">
