@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/contexts/CartContext";
 
+import InstallApp from "@/components/storefront/InstallApp";
+
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const { user } = useAuth();
@@ -15,17 +17,18 @@ export default function Navbar() {
     ["Our Catch", "/products"],
     ["Our Story", "/our-story"],
     ["Sustainability", "/sustainability"],
-    ["Certifications", "/certifications"],
+    ["Cook with AI", "/cook"],
   ];
   return (
     <header className="store-header">
       <a className="skip-link" href="#main-content">
         Skip to content
       </a>
+      <InstallApp />
       <div className="nav-inner">
         <Link href="/home" className="brand" aria-label="Wave of Bengal home">
           <Image
-            src="/images/WOB-black-4.png"
+            src="/icons/logo.svg"
             alt="Wave of Bengal"
             width={166}
             height={54}

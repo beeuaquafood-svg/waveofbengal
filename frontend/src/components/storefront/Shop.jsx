@@ -99,8 +99,8 @@ export default function Shop({ home = false }) {
               <Link className="button" href="/products">
                 Shop the collection <span aria-hidden="true">↗</span>
               </Link>
-              <Link className="text-link" href="/our-story">
-                Our Bengal story →
+              <Link className="text-link" href="/cook">
+                Cook with AI →
               </Link>
             </div>
             <span className="hero-footnote">

@@ -1,0 +1,16 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // The Admin SDK is the only writer/reader of payment and quota records.
+    match /commerceOrders/{id} { allow read, write: if false; }
+    match /checkoutQuota/{id} { allow read, write: if false; }
+    match /recipeQuota/{id} { allow read, write: if false; }
+    match /users/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid && request.resource.data.role == 'customer';
+      allow update: if request.auth != null && request.auth.uid == uid && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']);
+    }
+    match /admins/{uid} { allow read: if request.auth != null && request.auth.uid == uid; }
+    // No broad recursive allow rule: Firestore grants are additive.
+  }
+}

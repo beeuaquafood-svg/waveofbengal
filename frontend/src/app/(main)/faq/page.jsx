@@ -35,7 +35,7 @@ const groups = [
       ],
       [
         "Can I place an order online?",
-        "Online payment and order processing are not yet available. You can explore the collection and review your selection, but no order is placed and no payment is taken. Contact us for product or wholesale enquiries.",
+        "Choose your packs, review your bag and delivery details, then sign in to pay securely with Razorpay. Payment is offered only for supported delivery PIN codes when online ordering is enabled. Your order is confirmed after the server verifies payment. You can track or cancel eligible orders from your account.",
       ],
     ],
   ],

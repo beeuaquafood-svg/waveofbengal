@@ -1,0 +1,41 @@
+# Payments, identity and installed app rollout
+
+This PR adds the implementation, not live provider provisioning. Keep `COMMERCE_ENABLED=false` until the steps below pass on the deployed domain. No real charges, refunds or messages were sent during development.
+
+## Identity
+
+Copy `frontend/.env.example` to the deployment's environment settings. Firebase public variables must exist at **build time**. Enable Google, Email/Password and Phone in Firebase Authentication, authorize the exact deployed domain, and configure the allowed SMS regions/billing for phone sign-in. The Google OAuth client must correspond to this Firebase project. A domain or disabled-provider error is now explained rather than hidden behind the generic error. Pop-up sign-in requires a normal browser context; in-app browsers can block OAuth and should open the site in Chrome/Safari. Test on the real installed Android app as well as desktop. Never paste private service-account JSON into a public environment variable.
+
+The Firebase Admin service account must belong to the same project. Deploy `frontend/firestore.rules` and its composite index before enabling commerce. These rules restrict payment and quota collections to Admin SDK access; **do not combine them with a wildcard client-write allow rule**. Review any unrelated legacy collection rules before applying this baseline. Administrative fulfillment requires an Admin SDK-provisioned `admin: true` custom claim, not a client-editable profile role.
+
+## Payments and operations
+
+1. Configure Razorpay test keys and a separate webhook secret. Set the supported `DELIVERY_PINCODES` explicitly. The server preserves existing catalogue pricing, ₹100 shipping below ₹2,000 and the existing 5% tax calculation. Merchant must review these commercial settings before launch.
+2. Register `https://YOUR_DOMAIN/api/commerce/webhook` for `payment.authorized`, `payment.captured`, `order.paid`, and refund processed/failed events. Webhooks use the raw-body signature and fetch current provider state; delivery may be duplicated or out of order.
+3. Schedule authenticated GET `/api/commerce/reconcile` with `Authorization: Bearer COMMERCE_CRON_SECRET` every few minutes. Deploy the included Firestore composite index. Each run rotates through up to 50 pending/cancelled orders. Monitor `{failed}` and backlog; increase worker capacity for higher volume. Use a host with sufficient execution time for this batch, or lower the batch size. Webhooks are the primary confirmation mechanism.
+4. An authenticated customer creates a server-priced order and opens Razorpay Checkout. Only a matching, captured payment marks it paid. Authorized payments are explicitly captured. Dismissal, failed verification, network loss and page refresh lead to the status page, which can reconcile provider state. Server requests use bounded timeouts. The same checkout attempt reuses its order. An ambiguous create timeout is intentionally blocked from blind retry; a later payment webhook can recover its local order via provider notes. A still-stuck `creating` record requires merchant reconciliation against its Razorpay receipt.
+5. Orders are automatically accepted as `paid`; dispatch is a separate operational step. A trusted admin client may POST `/api/commerce/fulfill` with Firebase Bearer token, `{id, fulfillment: "preparing" | "dispatched" | "delivered"}`. Transitions and cancellation use Firestore transactions. Update dispatch promptly; the cancellation cutoff depends on this authoritative field. The new `/merchant/orders` screen lists the latest 100 orders and exposes these fulfillment transitions to claim-authorized administrators. Link it from your internal operations workflow; it intentionally does not trust the legacy client profile role.
+6. Customers can cancel before dispatch. Captured payments request full refunds to the original method with a stable `X-Refund-Idempotency` key; late captured payments on cancelled orders are refunded. Pending refunds are refreshed through the provider. Failed refunds require merchant intervention. Bank posting time is not promised. Refund/dispute exceptions and externally initiated partial refunds must be handled in Razorpay's merchant dashboard.
+7. Server prices come from `src/lib/catalog.js`, not the legacy browser-only admin catalogue. This release does not add inventory reservation or a warehouse integration. Reconcile available stock operationally and do not enable products that cannot be supplied. A future production inventory service should be authoritative for both browsing and checkout.
+
+The order owner is verified using a revoked-token-aware Firebase ID token on every customer API call. A different signed-in user cannot retrieve or cancel another customer's order. Keep service credentials off the client. Do not treat a screenshot, WhatsApp message or callback payload as proof of payment.
+
+## WhatsApp
+
+`WHATSAPP_BUSINESS_NUMBER` enables a prefilled customer-to-business message **only on a server-verified paid order**. It contains order number, total, customer name and payment reference. The customer must tap Send in WhatsApp; a website cannot silently send from their personal account.
+
+For automatic merchant notifications, configure the server-only Cloud API variables and an approved template with four body parameters in this order: **order number, INR total, customer name, payment reference**. Use a supported Graph API version from your Meta app settings and an opted-in merchant recipient distinct from the sender. Automatic sends are made only after capture. Transactional `sending/sent/failed/uncertain` markers avoid duplicate callback sends. Failed or uncertain sends need operator review; do not reset an uncertain marker without checking Meta delivery logs. Notification failure never changes a paid order into an unpaid one. Cancellation can race a notification already in transit, so always check current order state before fulfillment.
+
+## Recipes and PWA
+
+Set `GROQ_API_KEY` and optionally `GROQ_MODEL`. Signed-in customers can generate up to ten recipes/hour with server-backed quota. No deterministic recipe is presented as successful AI when the provider is unavailable. Exclusions and cooking preferences go to the provider; generated content still requires customer review.
+
+HTTPS is required for PWA installation. The SVG mark has matching PNG and maskable app icons. Android's Install button appears only when the browser raises `beforeinstallprompt`, and disappears after installation. iOS/desktop never see that Android button. Installation availability depends on the browser; do not simulate a successful install. The service worker stores only a public offline fallback, never payment, API, identity or order responses. Payment and status checks require a network connection. Android UPI app-switch testing must be done on a physical device.
+
+## Deployment acceptance checks
+
+With test keys and test accounts: Google/email/phone login; two pack sizes in a bag; successful capture; declined payment; Checkout dismissal; UPI app switch; refresh during payment; duplicate webhook; invalid signature; amount/order mismatch; customer A attempting customer B's order; cancellation before payment and after capture; cancellation vs dispatch race; pending/processed/failed refund; provider timeout and retry; WhatsApp notification once and never before capture; AI failure and regeneration; Android installation/offline recovery. Then switch keys and webhook configuration together, using a controlled merchant-approved live test before public rollout.
+
+## Local verification completed
+
+Production build and scoped ESLint passed. Sixteen unit tests cover catalogue/cart invariants, signature tampering, capture-before-confirmation, amount/order/currency mismatch, failed payments, late payment after cancellation, refund retry keys and notification deduplication including Firestore transaction retries. Browser checks cover 17 routes at five widths (375–1440px), cart variants and persistence, delivery review, auth return links, support forms, recipe preferences, manifest icons and a mocked Android install event. These checks do not substitute for live OAuth, SMS, Razorpay/Firestore integration, Meta delivery or a physical Android UPI/install test.
