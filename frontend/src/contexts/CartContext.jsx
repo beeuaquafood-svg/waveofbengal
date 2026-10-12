@@ -1,6 +1,12 @@
 "use client";
-import { createContext, useContext, useState, useEffect } from "react";
-import { addLine, restoreCart } from "@/lib/cart";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import { addLine, restoreCart, lineKey } from "@/lib/cart";
 const CartContext = createContext();
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
@@ -35,6 +41,25 @@ export function CartProvider({ children }) {
       current.map((item) => (item.key === key ? { ...item, quantity } : item)),
     );
   };
+  const completeOrder = useCallback((order) => {
+    if (!order || order.status !== "paid") return;
+    try {
+      const marker = `wob-completed-${order.id}`;
+      if (localStorage.getItem(marker)) return;
+      localStorage.setItem(marker, "true");
+      setCart((current) =>
+        current.flatMap((item) => {
+          const purchased = order.items
+            .filter((line) => lineKey(line) === item.key)
+            .reduce((sum, line) => sum + line.quantity, 0);
+          const quantity = item.quantity - purchased;
+          return quantity > 0 ? [{ ...item, quantity }] : [];
+        }),
+      );
+    } catch {
+      /* Keep the bag intact if persistent deduplication is unavailable. */
+    }
+  }, []);
   const cartTotal = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
@@ -48,6 +73,7 @@ export function CartProvider({ children }) {
         addToCart,
         removeFromCart,
         updateQuantity,
+        completeOrder,
         clearCart: () => setCart([]),
         cartTotal,
         cartCount,

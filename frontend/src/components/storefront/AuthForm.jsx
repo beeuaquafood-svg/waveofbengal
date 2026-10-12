@@ -15,6 +15,16 @@ function destination() {
 }
 function authError(error) {
   const messages = {
+    "auth/unauthorized-domain":
+      "Sign-in is not enabled for this website address yet. Please contact support.",
+    "auth/operation-not-allowed":
+      "This sign-in method is not enabled yet. Please choose another method.",
+    "auth/invalid-app-credential":
+      "Phone verification could not start. Refresh and try again, or use Google or email.",
+    "auth/invalid-phone-number":
+      "Enter a valid mobile number including your country code.",
+    "auth/account-exists-with-different-credential":
+      "Use your existing sign-in method for this email address.",
     "auth/invalid-credential":
       "The email or password isn’t correct. Please try again.",
     "auth/email-already-in-use":
@@ -121,7 +131,6 @@ export default function AuthForm({ register = false }) {
             alt="Wave of Bengal home"
             width={170}
             height={55}
-
           />
         </Link>
         <div className="auth-form">
@@ -140,6 +149,24 @@ export default function AuthForm({ register = false }) {
             disabled={busy}
             onClick={() => run(loginWithGoogle)}
           >
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24">
+              <path
+                fill="#4285F4"
+                d="M21.6 12.2c0-.7-.1-1.5-.2-2.2H12v4.2h5.4a4.6 4.6 0 0 1-2 3v2.6h3.3c1.9-1.8 2.9-4.4 2.9-7.6Z"
+              />
+              <path
+                fill="#34A853"
+                d="M12 22c2.7 0 5-.9 6.7-2.4l-3.3-2.6c-.9.6-2 1-3.4 1-2.6 0-4.8-1.8-5.6-4.1H3v2.7A10 10 0 0 0 12 22Z"
+              />
+              <path
+                fill="#FBBC05"
+                d="M6.4 13.9a6 6 0 0 1 0-3.8V7.4H3a10 10 0 0 0 0 9.2l3.4-2.7Z"
+              />
+              <path
+                fill="#EA4335"
+                d="M12 6c1.5 0 2.8.5 3.8 1.5L18.6 4A9.6 9.6 0 0 0 12 2a10 10 0 0 0-9 5.4l3.4 2.7A6 6 0 0 1 12 6Z"
+              />
+            </svg>{" "}
             Continue with Google
           </button>
           <div className="auth-divider">

@@ -1,11 +1,13 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import OrderSummary, {
   CheckoutSteps,
 } from "@/components/storefront/OrderSummary";
+
+import PaymentButton from "@/components/storefront/PaymentButton";
 
 const fields = [
   ["fullName", "Full name", "text", "name"],
@@ -32,6 +34,16 @@ export default function Checkout() {
     state: "",
     zip: "",
   });
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(
+        sessionStorage.getItem("wob-delivery") || "null",
+      );
+      // Hydrate the browser-only delivery draft after the server render.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (saved) setValues(saved);
+    } catch {}
+  }, []);
   const valueFor = (key) =>
     values[key] ??
     (key === "fullName"
@@ -41,6 +53,14 @@ export default function Checkout() {
         : "");
   function review(e) {
     e.preventDefault();
+    sessionStorage.setItem(
+      "wob-delivery",
+      JSON.stringify({
+        ...values,
+        fullName: valueFor("fullName"),
+        email: valueFor("email"),
+      }),
+    );
     setStep(3);
     requestAnimationFrame(() => {
       heading.current?.focus();
@@ -83,8 +103,9 @@ export default function Checkout() {
                 {!user && (
                   <p className="sign-in-note">
                     Already a customer?{" "}
-                    <Link href="/login?next=%2Fcheckout">Sign in</Link> or
-                    continue as a guest.
+                    <Link href="/login?next=%2Fcheckout">Sign in</Link> or add
+                    your delivery details below. Sign-in is required for secure
+                    payment and order tracking.
                   </p>
                 )}
                 <form className="fields delivery-fields" onSubmit={review}>
@@ -162,15 +183,14 @@ export default function Checkout() {
                   <br />
                   {values.phone}
                 </address>
-                <div className="checkout-notice" role="status">
-                  <h2>Online ordering is coming soon.</h2>
-                  <p>
-                    Your selection is saved in your bag. Payment and order
-                    processing aren’t available yet, so no order has been placed
-                    and you haven’t been charged.
-                  </p>
-                  <p>Please check back to complete your purchase.</p>
-                </div>
+                <PaymentButton
+                  items={cart}
+                  delivery={{
+                    ...values,
+                    fullName: valueFor("fullName"),
+                    email: valueFor("email"),
+                  }}
+                />
                 <Link className="button secondary" href="/cart">
                   Return to your bag →
                 </Link>

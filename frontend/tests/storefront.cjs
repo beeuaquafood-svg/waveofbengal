@@ -52,6 +52,7 @@ const server = spawn(
     await page.screenshot({
       path: path.join(screenshots, "home-desktop.png"),
       fullPage: true,
+      animations: "disabled",
     });
     for (const width of [375, 390, 768, 1024, 1440]) {
       await page.setViewportSize({ width, height: 900 });
@@ -67,6 +68,9 @@ const server = spawn(
         "certifications",
         "sustainability",
         "account",
+        "account/orders",
+        "checkout/confirmation",
+        "cook",
         "faq",
         "shipping",
         "contact",
@@ -83,7 +87,15 @@ const server = spawn(
         );
         if (
           width === 390 &&
-          ["home", "products/black-tiger-prawns", "login", "faq", "shipping", "contact"].includes(route)
+          [
+            "home",
+            "products/black-tiger-prawns",
+            "login",
+            "faq",
+            "shipping",
+            "contact",
+            "cook",
+          ].includes(route)
         ) {
           await page
             .locator("img")
@@ -96,6 +108,7 @@ const server = spawn(
               route.replaceAll("/", "-") + "-mobile.png",
             ),
             fullPage: true,
+            animations: "disabled",
           });
         }
       }
@@ -136,6 +149,7 @@ const server = spawn(
     await page.screenshot({
       path: path.join(screenshots, "bag-mobile.png"),
       fullPage: true,
+      animations: "disabled",
     });
     await page.getByRole("link", { name: "Continue to delivery →" }).click();
     for (const [label, value] of [
@@ -147,10 +161,13 @@ const server = spawn(
       ["State", "West Bengal"],
       ["PIN code", "700001"],
     ])
-      await page.locator(".delivery-fields").getByLabel(label, { exact: true }).fill(value);
+      await page
+        .locator(".delivery-fields")
+        .getByLabel(label, { exact: true })
+        .fill(value);
     await page.getByRole("button", { name: "Review order →" }).click();
     await page
-      .getByRole("heading", { name: "Online ordering is coming soon." })
+      .getByRole("heading", { name: "A good meal starts here." })
       .waitFor();
     assert.equal(await page.locator('input[name="cardNumber"]').count(), 0);
     await page
@@ -161,6 +178,7 @@ const server = spawn(
     await page.screenshot({
       path: path.join(screenshots, "review-mobile.png"),
       fullPage: true,
+      animations: "disabled",
     });
     await page.goto("http://127.0.0.1:3100/products/does-not-exist");
     assert.ok(
@@ -175,7 +193,8 @@ const server = spawn(
     await page.waitForURL("**/register?next=%2Fcheckout");
     await page.goto("http://127.0.0.1:3100/faq");
     await page
-      .locator("summary").filter({hasText:"Can I choose the pack size?"})
+      .locator("summary")
+      .filter({ hasText: "Can I choose the pack size?" })
       .click();
     assert.ok(
       await page
@@ -234,9 +253,47 @@ const server = spawn(
     await page
       .getByText("Your signup request has been sent.", { exact: false })
       .waitFor();
+    await page.goto("http://127.0.0.1:3100/cook");
+    await page.locator('select[name="cuisine"]').selectOption("Thai");
+    await page.getByLabel("Ingredients to avoid").fill("Peanuts");
+    assert.ok(
+      await page
+        .getByRole("link", { name: "Sign in to create a recipe →" })
+        .isVisible(),
+    );
+    assert.equal(await page.locator(".install-app").count(), 0);
+    const manifest = await (
+      await page.request.get("http://127.0.0.1:3100/manifest.webmanifest")
+    ).json();
+    assert.equal(manifest.display, "standalone");
+    assert.ok(manifest.icons.some((icon) => icon.purpose === "maskable"));
+    for (const icon of manifest.icons)
+      assert.equal(
+        (await page.request.get("http://127.0.0.1:3100" + icon.src)).status(),
+        200,
+      );
+    const android = await browser.newContext({
+      userAgent:
+        "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/131 Mobile Safari/537.36",
+      viewport: { width: 390, height: 844 },
+    });
+    const phone = await android.newPage();
+    await phone.goto("http://127.0.0.1:3100/home");
+    await phone.getByRole("button", { name: "Open menu", exact: true }).click();
+    await phone.evaluate(() => {
+      const event = new Event("beforeinstallprompt", { cancelable: true });
+      event.prompt = async () => {};
+      event.userChoice = Promise.resolve({ outcome: "accepted" });
+      window.dispatchEvent(event);
+    });
+    await phone
+      .getByRole("button", { name: "↓ Install Wave of Bengal" })
+      .click();
+    assert.equal(await phone.locator(".install-app").count(), 0);
+    await android.close();
     assert.deepEqual(errors, []);
     console.log(
-      "PASS: 70 responsive route checks (375–1440px), mobile menu, filters/search, pack variants, persisted bag, delivery review, invalid product, auth return URL; no page errors.",
+      "PASS: 85 responsive route checks (375–1440px), mobile menu, filters/search, pack variants, persisted bag, delivery review, invalid product, auth return URL; no page errors.",
     );
   } finally {
     await browser.close();

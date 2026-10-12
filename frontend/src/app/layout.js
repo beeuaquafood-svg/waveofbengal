@@ -5,10 +5,14 @@ import { CartProvider } from "@/contexts/CartContext";
 import AnalyticsEngine from "@/components/analytics/AnalyticsEngine";
 
 export const metadata = {
+  icons: { icon: "/icons/mark.svg", apple: "/icons/icon-192.png" },
+  manifest: "/manifest.webmanifest",
   title: "Wave of Bengal | Premium Seafood",
   description:
     "Fresh from ocean to your doorstep. Premium, sustainably sourced seafood.",
 };
+
+export const viewport = { themeColor: "#173d3b" };
 
 export default function RootLayout({ children }) {
   return (

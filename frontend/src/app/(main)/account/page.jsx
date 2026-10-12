@@ -121,6 +121,9 @@ export default function Account() {
           <Link className="button wide" href="/products">
             Shop prawns →
           </Link>
+          <Link className="text-link" href="/account/orders">
+            Your orders & refunds →
+          </Link>
           {isAdmin && (
             <Link className="text-link" href="/admin">
               Open admin dashboard →

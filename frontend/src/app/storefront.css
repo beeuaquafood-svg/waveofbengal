@@ -188,7 +188,11 @@
 .skip-link {
   position: absolute;
   left: 16px;
-  top: -100px;
+  top: 0;
+  clip-path: inset(100%);
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
   background: var(--ink);
   color: white;
   padding: 12px;
@@ -196,6 +200,9 @@
 }
 .skip-link:focus {
   top: 10px;
+  clip-path: none;
+  width: auto;
+  height: auto;
 }
 .mobile-nav {
   display: none;
@@ -2068,5 +2075,247 @@
     justify-content: space-between;
     padding: 12px 0;
     border-bottom: 1px solid var(--line);
+  }
+}
+
+/* A quieter, tactile finish across the installed app and browser. */
+.storefront {
+  --accent: #173d3b;
+}
+.storefront .store-header {
+  background: rgba(248, 247, 244, 0.94);
+  backdrop-filter: blur(18px);
+}
+.storefront .button {
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.storefront .button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px #173d3b18;
+}
+.storefront .button:active {
+  transform: translateY(0);
+}
+.storefront .button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+  transform: none;
+}
+.storefront .install-app {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: #173d3b;
+  color: #fff;
+  padding: 11px 20px;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.storefront .payment-panel {
+  padding: 28px;
+  background: #eeeee6;
+  border-radius: 20px;
+  margin: 28px 0;
+}
+.storefront .payment-panel h2 {
+  margin: 12px 0;
+}
+.storefront .payment-panel .button {
+  margin: 16px 0;
+}
+.storefront .order-receipt {
+  max-width: 900px;
+  padding-top: 72px;
+  padding-bottom: 100px;
+  min-height: 70vh;
+}
+.storefront .order-receipt h1 {
+  font-size: clamp(36px, 6vw, 64px);
+  line-height: 1.08;
+  letter-spacing: -0.055em;
+  margin: 18px 0 36px;
+}
+.storefront .receipt-card {
+  padding: 32px;
+  background: #fff;
+  border: 1px solid #e6e5df;
+  border-radius: 24px;
+  margin-bottom: 20px;
+  overflow-wrap: anywhere;
+}
+.storefront .receipt-card p {
+  margin: 16px 0;
+}
+.storefront .receipt-actions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin: 24px 0;
+}
+.storefront .order-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  text-decoration: none;
+}
+.storefront .recipe-studio {
+  padding-top: 70px;
+  padding-bottom: 100px;
+}
+.storefront .studio-heading {
+  max-width: 780px;
+  margin-bottom: 56px;
+}
+.storefront .studio-heading h1 {
+  font-size: clamp(46px, 6.5vw, 84px);
+  line-height: 1.02;
+  letter-spacing: -0.06em;
+  margin: 20px 0 28px;
+  font-weight: 550;
+}
+.storefront .studio-heading h1 em {
+  font-family: Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.055em;
+  color: #637c72;
+}
+.storefront .studio-heading p {
+  max-width: 490px;
+  font-size: 18px;
+  line-height: 1.7;
+  color: #69736c;
+}
+.storefront .studio-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+  gap: 36px;
+  align-items: start;
+}
+.storefront .studio-controls {
+  background: #fff;
+  border: 1px solid #e6e5df;
+  padding: 32px;
+  border-radius: 24px;
+}
+.storefront .studio-controls h2 {
+  font-size: 24px;
+  margin: 0 0 12px;
+}
+.storefront .studio-controls select,
+.storefront .studio-controls textarea,
+.storefront .recipe-edit textarea {
+  width: 100%;
+  max-width: 100%;
+  padding: 13px;
+  border: 1px solid #dcded7;
+  border-radius: 10px;
+  background: #fafbf8;
+  color: #173d3b;
+  font: inherit;
+}
+.storefront .recipe-result {
+  min-height: 620px;
+  border-radius: 28px;
+  padding: 44px;
+  background: #e9eee7;
+}
+.storefront .recipe-result h2 {
+  font:
+    400 clamp(32px, 4vw, 50px)/1.12 Georgia,
+    serif;
+  letter-spacing: -0.04em;
+  margin: 22px 0;
+}
+.storefront .recipe-result p,
+.storefront .recipe-result li {
+  line-height: 1.7;
+}
+.storefront .recipe-result li {
+  padding: 0 0 16px 8px;
+}
+.storefront .recipe-result ol {
+  padding-left: 22px;
+}
+.storefront .recipe-edit {
+  display: block;
+  font-size: 14px;
+  margin: 26px 0;
+}
+.storefront .recipe-edit textarea {
+  margin-top: 12px;
+  line-height: 1.7;
+  resize: vertical;
+}
+.storefront .recipe-empty {
+  min-height: 510px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.storefront .kitchen-mark {
+  font-size: 90px;
+  line-height: 1;
+  color: #728776;
+  margin-bottom: 44px;
+}
+@media (max-width: 760px) {
+  .storefront .studio-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .storefront .studio-controls,
+  .storefront .recipe-result,
+  .storefront .receipt-card {
+    padding: 24px;
+  }
+  .storefront .recipe-result {
+    min-height: 400px;
+  }
+  .storefront .recipe-empty {
+    min-height: 340px;
+  }
+  .storefront .recipe-studio,
+  .storefront .order-receipt {
+    padding-top: 40px;
+  }
+  .storefront .payment-panel {
+    padding: 22px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .storefront *,
+  .storefront *::before,
+  .storefront *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.storefront .checkout-page h1 {
+  scroll-margin-top: 120px;
+}
+@keyframes coastal-arrival {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .storefront .hero-copy,
+  .storefront .studio-heading {
+    animation: coastal-arrival 0.65s ease-out both;
   }
 }
