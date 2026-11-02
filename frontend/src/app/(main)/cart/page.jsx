@@ -72,7 +72,7 @@ export default function Cart() {
                       <output aria-label="Quantity">{item.quantity}</output>
                       <button
                         aria-label={`Increase ${item.name} ${item.size}`}
-                        disabled={item.quantity >= 99}
+                        disabled={item.quantity >= 20}
                         onClick={() =>
                           updateQuantity(item.key, item.quantity + 1)
                         }
@@ -100,7 +100,8 @@ export default function Cart() {
               Continue to delivery →
             </Link>
             <p className="small-note">
-              No account needed to review your order.
+              Next: delivery details, then secure payment. Sign in before paying
+              to keep your orders in one place.
             </p>
           </OrderSummary>
         </div>

@@ -1,5 +1,6 @@
 "use client";
 import { useCart } from "@/contexts/CartContext";
+import Link from "next/link";
 import { money, totals } from "@/lib/catalog";
 export default function OrderSummary({ children }) {
   const { cart, cartTotal } = useCart();
@@ -40,9 +41,16 @@ export default function OrderSummary({ children }) {
         </div>
       </dl>
       {cartTotal < 2000 && cartTotal > 0 && (
-        <p className="delivery-note">
-          You’re {money(2000 - cartTotal)} away from free delivery.
-        </p>
+        <div className="delivery-progress">
+          <p className="delivery-note">
+            You’re {money(2000 - cartTotal)} away from free delivery.
+          </p>
+          <progress
+            value={cartTotal}
+            max={2000}
+            aria-label="Progress toward free delivery"
+          />
+        </div>
       )}
       {children}
     </aside>
@@ -51,14 +59,18 @@ export default function OrderSummary({ children }) {
 export function CheckoutSteps({ step = 1 }) {
   return (
     <ol className="checkout-steps" aria-label="Checkout progress">
-      {["Bag", "Delivery", "Review"].map((name, i) => (
+      {["Bag", "Delivery", "Payment"].map((name, i) => (
         <li
           key={name}
           aria-current={step === i + 1 ? "step" : undefined}
           className={step >= i + 1 ? "current" : ""}
         >
           <span>{i + 1}</span>
-          {name}
+          {step > i + 1 ? (
+            <Link href={i === 0 ? "/cart" : "/checkout"}>{name}</Link>
+          ) : (
+            name
+          )}
         </li>
       ))}
     </ol>

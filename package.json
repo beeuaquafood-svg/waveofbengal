@@ -1,5 +1,15 @@
 {
   "dependencies": {
     "firebase": "^12.9.0"
+  },
+  "engines": {
+    "node": "22.x"
+  },
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix frontend run build",
+    "dev": "npm --prefix frontend run dev",
+    "start": "npm --prefix frontend run start",
+    "test": "npm --prefix frontend test"
   }
 }

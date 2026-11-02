@@ -44,7 +44,7 @@ function Product({ product, related }) {
             <span> / {size.label}</span>
           </div>
           <fieldset className="pack-picker">
-            <legend>Choose your pack</legend>
+            <legend>1. Choose your pack</legend>
             <div>
               {product.sizes.map((s) => (
                 <button
@@ -63,6 +63,7 @@ function Product({ product, related }) {
               ))}
             </div>
           </fieldset>
+          <p className="purchase-label">2. Choose quantity & add to bag</p>
           <div className="purchase-row">
             <div className="quantity-control">
               <button
@@ -75,7 +76,7 @@ function Product({ product, related }) {
               <output aria-label="Quantity">{quantity}</output>
               <button
                 aria-label="Increase quantity"
-                disabled={quantity === Math.min(99, product.stock ?? 99)}
+                disabled={quantity === Math.min(20, product.stock ?? 20)}
                 onClick={() => setQuantity(quantity + 1)}
               >
                 +
@@ -105,7 +106,15 @@ function Product({ product, related }) {
           </div>
           {added && (
             <div className="added-notice" role="status">
-              Added to your bag. <Link href="/cart">View bag & checkout →</Link>
+              <div>
+                <strong>Good choice. It’s in your bag.</strong>
+                <p>
+                  {quantity} × {product.name} · {size.label}
+                </p>
+              </div>
+              <Link className="button" href="/cart">
+                View bag & checkout →
+              </Link>
             </div>
           )}
           <p className="small-note">
@@ -113,6 +122,10 @@ function Product({ product, related }) {
             <br />
             Estimated tax shown in your bag.
           </p>
+          <Link className="recipe-product-link" href="/cook">
+            <span>Not sure what to cook?</span>
+            <strong>Find a recipe in our AI kitchen ↗</strong>
+          </Link>
           <div className="product-details">
             <details open>
               <summary>What’s in your pack</summary>

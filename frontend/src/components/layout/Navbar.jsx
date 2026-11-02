@@ -14,13 +14,19 @@ export default function Navbar() {
   const { cartCount } = useCart();
   const pathname = usePathname();
   const links = [
-    ["Our Catch", "/products"],
+    ["Shop prawns", "/products"],
     ["Our Story", "/our-story"],
-    ["Sustainability", "/sustainability"],
+    ["Help & delivery", "/faq"],
     ["Cook with AI", "/cook"],
   ];
   return (
     <header className="store-header">
+      <div className="shop-announcement">
+        A little closer to the coast.{" "}
+        <Link href="/shipping">
+          Free delivery on orders ₹2,000+ <span aria-hidden="true">↗</span>
+        </Link>
+      </div>
       <a className="skip-link" href="#main-content">
         Skip to content
       </a>
@@ -92,6 +98,7 @@ export default function Navbar() {
         >
           {[
             ...links,
+            ["Your orders", "/account/orders"],
             ["Contact Us", "/contact"],
             [user ? "My account" : "Sign in", user ? "/account" : "/login"],
           ].map(([label, href]) => (
