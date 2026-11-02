@@ -49,6 +49,20 @@ export function ProductCard({ product }) {
         <span>From {money(starting)}</span>
       </div>
       <p>{product.description}</p>
+      <div className="card-pack-info">
+        <span>
+          {product.sizes.length === 1
+            ? product.sizes[0].label
+            : `${product.sizes.length} pack sizes`}
+        </span>
+        <span>
+          {product.sizes
+            .slice(0, 3)
+            .map((s) => s.label)
+            .join(" · ")}
+          {product.sizes.length > 3 ? " +" : ""}
+        </span>
+      </div>
       <span className="product-link">
         {product.stock === 0 ? "Currently unavailable" : "Choose your pack"}{" "}
         <span aria-hidden="true">→</span>
@@ -57,9 +71,9 @@ export function ProductCard({ product }) {
   );
 }
 
-export default function Shop({ home = false }) {
+export default function Shop({ home = false, initialCategory = "All" }) {
   const products = useCatalogue();
-  const [category, setCategory] = useState("All");
+  const [category, setCategory] = useState(initialCategory);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("featured");
   const categories = [
@@ -87,17 +101,17 @@ export default function Shop({ home = false }) {
               WAVE OF BENGAL · THE PRAWN COLLECTION
             </span>
             <h1>
-              Good food.
+              Bring the coast
               <br />
-              Great beginnings.
+              <em>to your table.</em>
             </h1>
             <p>
-              Sweet, succulent prawns. A little coastal inspiration. Everything
-              you need to make a meal worth slowing down for.
+              Prawns for a quick supper, a family favourite, or something worth
+              celebrating. Find your catch. Choose your pack. Make it delicious.
             </p>
             <div className="hero-actions">
               <Link className="button" href="/products">
-                Shop the collection <span aria-hidden="true">↗</span>
+                Shop prawns <span aria-hidden="true">↗</span>
               </Link>
               <Link className="text-link" href="/cook">
                 Cook with AI →
@@ -127,17 +141,42 @@ export default function Shop({ home = false }) {
         </section>
       )}
       {home && (
-        <div className="service-strip">
-          <span>
-            01 <strong>Find your favourite</strong>
-          </span>
-          <span>
-            02 <strong>Choose your pack</strong>
-          </span>
-          <span>
-            03 <strong>Make something memorable</strong>
-          </span>
-        </div>
+        <section className="shop-paths shell" aria-label="Find your selection">
+          <div className="paths-intro">
+            <span className="eyebrow">WHAT’S ON YOUR MENU?</span>
+            <h2>A catch for every kind of cook.</h2>
+          </div>
+          <div className="path-grid">
+            {[
+              ["01", "Keep it classic", "Prawns to cook your way.", "Prawns"],
+              [
+                "02",
+                "Make dinner easy",
+                "Explore ready-to-cook favourites.",
+                "Ready-to-Cook",
+              ],
+              [
+                "03",
+                "Try something new",
+                "Start with a smaller selection.",
+                "Trial Packs",
+              ],
+            ].map(([number, title, copy, category]) => (
+              <Link
+                key={category}
+                className="shop-path"
+                href={`/products?category=${encodeURIComponent(category)}`}
+              >
+                <span className="path-number">{number}</span>
+                <div>
+                  <h3>{title}</h3>
+                  <p>{copy}</p>
+                </div>
+                <span aria-hidden="true">↗</span>
+              </Link>
+            ))}
+          </div>
+        </section>
       )}
       <section className="shop-section shell">
         <div className="section-heading">
@@ -197,7 +236,19 @@ export default function Shop({ home = false }) {
             </div>
             <p className="result-count" role="status">
               {visible.length} selections
+              {category !== "All" ? ` · ${category}` : ""}
             </p>
+            {(category !== "All" || search) && (
+              <button
+                className="text-link reset-selection"
+                onClick={() => {
+                  setSearch("");
+                  setCategory("All");
+                }}
+              >
+                Clear filters ×
+              </button>
+            )}
           </>
         )}
         <div className="product-grid">
@@ -221,6 +272,27 @@ export default function Shop({ home = false }) {
           </div>
         )}
       </section>
+      {home && (
+        <section className="kitchen-invitation shell">
+          <div>
+            <span className="eyebrow">A LITTLE DINNER INSPIRATION</span>
+            <h2>Your catch. Your kind of cooking.</h2>
+            <p>
+              Choose the cuisine, spice and ingredients you love. Our AI kitchen
+              helps you turn a pack of prawns into a plan for dinner.
+            </p>
+            <Link className="button" href="/cook">
+              Find my recipe ↗
+            </Link>
+          </div>
+          <div className="kitchen-options" aria-hidden="true">
+            <span>Bengali curry</span>
+            <span>A quick grill</span>
+            <span>Something mild</span>
+            <span>Your own twist</span>
+          </div>
+        </section>
+      )}
       {home && (
         <section className="story-feature shell">
           <div className="story-image">
