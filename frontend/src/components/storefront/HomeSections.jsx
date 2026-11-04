@@ -155,8 +155,8 @@ export function Story() {
       <div className="wc-story">
         <div className="wc-story-image">
           <Image
-            src="/images/skewers.jpeg"
-            alt="Prawn skewers ready for cooking"
+            src="/images/coastal-boutique.webp"
+            alt="Illustrated Wave of Bengal shopfront on the waterfront"
             fill
             sizes="(max-width: 900px) 92vw, 46vw"
           />
