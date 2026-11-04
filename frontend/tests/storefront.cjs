@@ -6,6 +6,20 @@ const fs = require("node:fs");
 const cwd = path.resolve(__dirname, "..");
 const screenshots = path.join(cwd, "test-results");
 fs.mkdirSync(screenshots, { recursive: true });
+
+// Lazy images below the fold are never requested in headless Chromium, so a bare
+// img.decode() can wait forever. Force them eager, then decode with a time limit.
+async function settleImages(page) {
+  await page.evaluate(async () => {
+    for (const img of document.images) img.loading = "eager";
+    await Promise.race([
+      Promise.all(
+        [...document.images].map((img) => img.decode().catch(() => {})),
+      ),
+      new Promise((resolve) => setTimeout(resolve, 8000)),
+    ]);
+  });
+}
 const server = spawn(
   process.execPath,
   [
@@ -44,11 +58,7 @@ const server = spawn(
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
     await page.goto("http://127.0.0.1:3100/home");
-    await page
-      .locator("img")
-      .evaluateAll((images) =>
-        Promise.all(images.map((img) => img.decode().catch(() => {}))),
-      );
+    await settleImages(page);
     await page.screenshot({
       path: path.join(screenshots, "home-desktop.png"),
       fullPage: true,
@@ -97,11 +107,7 @@ const server = spawn(
             "cook",
           ].includes(route)
         ) {
-          await page
-            .locator("img")
-            .evaluateAll((images) =>
-              Promise.all(images.map((img) => img.decode().catch(() => {}))),
-            );
+          await settleImages(page);
           await page.screenshot({
             path: path.join(
               screenshots,
@@ -147,11 +153,7 @@ const server = spawn(
     await page.reload();
     await page.locator(".bag-item").first().waitFor();
     assert.equal(await page.locator(".bag-item").count(), 2);
-    await page
-      .locator("img")
-      .evaluateAll((images) =>
-        Promise.all(images.map((img) => img.decode().catch(() => {}))),
-      );
+    await settleImages(page);
     await page.screenshot({
       path: path.join(screenshots, "bag-mobile.png"),
       fullPage: true,
@@ -176,11 +178,7 @@ const server = spawn(
       .getByRole("heading", { name: "A good meal starts here." })
       .waitFor();
     assert.equal(await page.locator('input[name="cardNumber"]').count(), 0);
-    await page
-      .locator("img")
-      .evaluateAll((images) =>
-        Promise.all(images.map((img) => img.decode().catch(() => {}))),
-      );
+    await settleImages(page);
     await page.screenshot({
       path: path.join(screenshots, "review-mobile.png"),
       fullPage: true,

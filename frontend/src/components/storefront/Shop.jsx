@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore, useState } from "react";
+import { useSyncExternalStore, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -9,6 +9,17 @@ import {
   money,
   normalizeProduct,
 } from "@/lib/catalog";
+import { useCart } from "@/contexts/CartContext";
+import { ArrowIcon, BagIcon } from "./icons";
+import {
+  Hero,
+  Marquee,
+  Paths,
+  WhyWave,
+  HowItWorks,
+  CookInvite,
+  Story,
+} from "./HomeSections";
 
 let snapshot;
 const serverCatalogue = DEFAULT_PRODUCTS.map(normalizeProduct);
@@ -27,49 +38,121 @@ export function useCatalogue() {
   return useSyncExternalStore(subscribe, readCatalogue, () => serverCatalogue);
 }
 
+/**
+ * Product card. The whole card opens the product page (stretched title link);
+ * the pack chips and quick-add sit above that link so a customer can pick a
+ * pack and add it without leaving the grid.
+ */
 export function ProductCard({ product }) {
-  const starting = Math.min(...product.sizes.map((size) => size.price));
+  const { addToCart } = useCart();
+  const [sizeId, setSizeId] = useState(product.sizes[0].id);
+  const [added, setAdded] = useState(false);
+  const timer = useRef(null);
+  useEffect(() => () => clearTimeout(timer.current), []);
+  const size = product.sizes.find((s) => s.id === sizeId) || product.sizes[0];
+  const unavailable = product.stock === 0;
+  const single = product.sizes.length === 1;
+
+  function quickAdd() {
+    addToCart(
+      {
+        id: product.id,
+        name: product.name,
+        size: size.label,
+        price: size.price,
+        image: product.image,
+      },
+      1,
+    );
+    setAdded(true);
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => setAdded(false), 2200);
+  }
+
   return (
-    <Link className="product-card" href={`/products/${product.id}`}>
-      <div className="product-photo">
+    <article className="product-card wc-card">
+      <div className="product-photo wc-card-photo">
         <Image
           src={product.image}
-          alt={product.name}
+          alt=""
           fill
-          sizes="(max-width: 600px) 90vw, (max-width: 900px) 45vw, 30vw"
+          sizes="(max-width: 600px) 92vw, (max-width: 1000px) 46vw, 30vw"
           unoptimized={!product.image?.startsWith("/")}
         />
         <span className="product-tag">{product.category}</span>
-        <span className="product-arrow" aria-hidden="true">
-          ↗
-        </span>
+        {unavailable && <span className="wc-soldout">Unavailable</span>}
       </div>
-      <div className="product-meta">
-        <h3>{product.name}</h3>
-        <span>From {money(starting)}</span>
+      <div className="wc-card-body">
+        <h3>
+          <Link className="wc-card-link" href={`/products/${product.id}`}>
+            {product.name}
+          </Link>
+        </h3>
+        <p className="wc-card-desc">{product.description}</p>
+        <div className="wc-card-buy">
+          {!single && (
+            <div
+              className="wc-chips"
+              role="group"
+              aria-label={`Pack size for ${product.name}`}
+            >
+              {product.sizes.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  aria-pressed={s.id === size.id}
+                  onClick={() => {
+                    setSizeId(s.id);
+                    setAdded(false);
+                  }}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="wc-card-row">
+            <div className="wc-card-price">
+              <strong>{money(size.price)}</strong>
+              {single && <span>{size.label}</span>}
+            </div>
+            <button
+              type="button"
+              className="wc-add"
+              data-added={added || undefined}
+              disabled={unavailable}
+              aria-label={`Quick add ${product.name}, ${size.label}`}
+              onClick={quickAdd}
+            >
+              {unavailable ? "Sold out" : added ? "Added ✓" : "+ Add"}
+            </button>
+          </div>
+          <span className="sr-only" role="status">
+            {added ? `${product.name}, ${size.label} added to your bag.` : ""}
+          </span>
+        </div>
       </div>
-      <p>{product.description}</p>
-      <div className="card-pack-info">
-        <span>
-          {product.sizes.length === 1
-            ? product.sizes[0].label
-            : `${product.sizes.length} pack sizes`}
-        </span>
-        <span>
-          {product.sizes
-            .slice(0, 3)
-            .map((s) => s.label)
-            .join(" · ")}
-          {product.sizes.length > 3 ? " +" : ""}
-        </span>
-      </div>
-      <span className="product-link">
-        {product.stock === 0 ? "Currently unavailable" : "Choose your pack"}{" "}
-        <span aria-hidden="true">→</span>
+    </article>
+  );
+}
+
+// Appears on browse pages once something is in the bag, so the next step is
+// always one tap away on a phone.
+function BagBar() {
+  const { ready, cartCount, cartTotal } = useCart();
+  if (!ready || cartCount === 0) return null;
+  return (
+    <Link className="wc-bagbar" href="/cart">
+      <BagIcon width={20} height={20} />
+      <span>
+        View bag · {cartCount} {cartCount === 1 ? "item" : "items"}
       </span>
+      <strong>{money(cartTotal)}</strong>
     </Link>
   );
 }
+
+const lowest = (product) => Math.min(...product.sizes.map((s) => s.price));
 
 export default function Shop({ home = false, initialCategory = "All" }) {
   const products = useCatalogue();
@@ -88,239 +171,123 @@ export default function Shop({ home = false, initialCategory = "All" }) {
   const visible = [...filtered].sort((a, b) =>
     sort === "featured"
       ? 0
-      : (Math.min(...a.sizes.map((s) => s.price)) -
-          Math.min(...b.sizes.map((s) => s.price))) *
-        (sort === "low" ? 1 : -1),
+      : (lowest(a) - lowest(b)) * (sort === "low" ? 1 : -1),
   );
+  const reset = () => {
+    setSearch("");
+    setCategory("All");
+  };
+
+  if (home)
+    return (
+      <>
+        <Hero products={products} />
+        <Marquee />
+        <Paths />
+        <section
+          className="shell wc-section"
+          aria-labelledby="featured-heading"
+        >
+          <div className="wc-section-head">
+            <div>
+              <span className="wc-kicker">A TASTE OF THE COAST</span>
+              <h2 id="featured-heading">Your next favourite meal.</h2>
+              <p>From a simple supper to the centre of the table.</p>
+            </div>
+            <Link className="wc-link" href="/products">
+              Explore all {products.length} <ArrowIcon />
+            </Link>
+          </div>
+          <div className="product-grid wc-grid">
+            {products.slice(0, 3).map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+            <Link className="wc-all-tile" href="/products">
+              <span>All {products.length} selections</span>
+              <ArrowIcon width={32} height={32} />
+            </Link>
+          </div>
+        </section>
+        <WhyWave />
+        <HowItWorks />
+        <CookInvite />
+        <Story />
+        <BagBar />
+      </>
+    );
+
   return (
     <>
-      {home && (
-        <section className="coastal-hero">
-          <div className="hero-copy">
-            <span className="eyebrow">
-              WAVE OF BENGAL · THE PRAWN COLLECTION
-            </span>
-            <h1>
-              Bring the coast
-              <br />
-              <em>to your table.</em>
-            </h1>
-            <p>
-              Prawns for a quick supper, a family favourite, or something worth
-              celebrating. Find your catch. Choose your pack. Make it delicious.
-            </p>
-            <div className="hero-actions">
-              <Link className="button" href="/products">
-                Shop prawns <span aria-hidden="true">↗</span>
-              </Link>
-              <Link className="text-link" href="/cook">
-                Cook with AI →
-              </Link>
-            </div>
-            <span className="hero-footnote">
-              For everyday favourites. And special occasions.
-            </span>
-          </div>
-          <div className="hero-photo">
-            <Image
-              src="/images/black%20tiger.jpeg"
-              alt="Raw Black Tiger Prawns arranged with herbs and citrus"
-              fill
-              priority
-
-              sizes="(max-width: 760px) 100vw, 55vw"
+      <section className="wc-page-head">
+        <div className="shell">
+          <span className="wc-kicker">THE COLLECTION</span>
+          <h1>Prawns, perfectly picked.</h1>
+          <p>Discover the selection. Pick a pack. Make it your own.</p>
+        </div>
+      </section>
+      <section className="shell wc-section wc-collection">
+        <div className="shop-tools wc-tools">
+          <label className="search-field">
+            <span aria-hidden="true">⌕</span>
+            <input
+              aria-label="Search prawns"
+              placeholder="Find your favourite prawns…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
-            <div className="hero-caption">
-              <span>THE SIGNATURE SELECTION</span>
-              <strong>Black Tiger Prawns</strong>
-              <Link href="/products/black-tiger-prawns">
-                Discover the favourite ↗
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
-      {home && (
-        <section className="shop-paths shell" aria-label="Find your selection">
-          <div className="paths-intro">
-            <span className="eyebrow">WHAT’S ON YOUR MENU?</span>
-            <h2>A catch for every kind of cook.</h2>
-          </div>
-          <div className="path-grid">
-            {[
-              ["01", "Keep it classic", "Prawns to cook your way.", "Prawns"],
-              [
-                "02",
-                "Make dinner easy",
-                "Explore ready-to-cook favourites.",
-                "Ready-to-Cook",
-              ],
-              [
-                "03",
-                "Try something new",
-                "Start with a smaller selection.",
-                "Trial Packs",
-              ],
-            ].map(([number, title, copy, category]) => (
-              <Link
-                key={category}
-                className="shop-path"
-                href={`/products?category=${encodeURIComponent(category)}`}
-              >
-                <span className="path-number">{number}</span>
-                <div>
-                  <h3>{title}</h3>
-                  <p>{copy}</p>
-                </div>
-                <span aria-hidden="true">↗</span>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-      <section className="shop-section shell">
-        <div className="section-heading">
-          <div>
-            <span className="eyebrow">
-              {home ? "A TASTE OF THE COAST" : "THE COLLECTION"}
-            </span>
-            {home ? (
-              <h2>Your next favourite meal.</h2>
-            ) : (
-              <h1>Prawns, perfectly picked.</h1>
-            )}
-            <p>
-              {home
-                ? "From a simple supper to the centre of the table."
-                : "Discover the selection. Pick a pack. Make it your own."}
-            </p>
-          </div>
-          {home && (
-            <Link className="text-link" href="/products">
-              Explore all prawns ↗
-            </Link>
+          </label>
+          <label className="sort-field">
+            Sort by{" "}
+            <select value={sort} onChange={(e) => setSort(e.target.value)}>
+              <option value="featured">Featured</option>
+              <option value="low">Price: low to high</option>
+              <option value="high">Price: high to low</option>
+            </select>
+          </label>
+        </div>
+        <div
+          className="filter-row wc-filters"
+          role="group"
+          aria-label="Product categories"
+        >
+          {categories.map((c) => (
+            <button
+              key={c}
+              aria-pressed={category === c}
+              className={category === c ? "filter active" : "filter"}
+              onClick={() => setCategory(c)}
+            >
+              {c === "All" ? "All prawns" : c}
+            </button>
+          ))}
+        </div>
+        <div className="wc-resultbar">
+          <p className="result-count" role="status">
+            {visible.length} selections
+            {category !== "All" ? ` · ${category}` : ""}
+          </p>
+          {(category !== "All" || search) && (
+            <button className="text-link reset-selection" onClick={reset}>
+              Clear filters ×
+            </button>
           )}
         </div>
-        {!home && (
-          <>
-            <div className="shop-tools">
-              <label className="search-field">
-                <span aria-hidden="true">⌕</span>
-                <input
-                  aria-label="Search prawns"
-                  placeholder="Find your favourite prawns…"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-              </label>
-              <label className="sort-field">
-                Sort by{" "}
-                <select value={sort} onChange={(e) => setSort(e.target.value)}>
-                  <option value="featured">Featured</option>
-                  <option value="low">Price: low to high</option>
-                  <option value="high">Price: high to low</option>
-                </select>
-              </label>
-            </div>
-            <div className="filter-row" aria-label="Product categories">
-              {categories.map((c) => (
-                <button
-                  key={c}
-                  aria-pressed={category === c}
-                  className={category === c ? "filter active" : "filter"}
-                  onClick={() => setCategory(c)}
-                >
-                  {c === "All" ? "All prawns" : c}
-                </button>
-              ))}
-            </div>
-            <p className="result-count" role="status">
-              {visible.length} selections
-              {category !== "All" ? ` · ${category}` : ""}
-            </p>
-            {(category !== "All" || search) && (
-              <button
-                className="text-link reset-selection"
-                onClick={() => {
-                  setSearch("");
-                  setCategory("All");
-                }}
-              >
-                Clear filters ×
-              </button>
-            )}
-          </>
-        )}
-        <div className="product-grid">
-          {(home ? products.slice(0, 3) : visible).map((p) => (
+        <div className="product-grid wc-grid">
+          {visible.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
         </div>
-        {!home && !visible.length && (
+        {!visible.length && (
           <div className="empty-state">
             <h2>No matches just yet.</h2>
             <p>Try another name or explore the whole collection.</p>
-            <button
-              className="button"
-              onClick={() => {
-                setSearch("");
-                setCategory("All");
-              }}
-            >
+            <button className="button" onClick={reset}>
               Clear filters
             </button>
           </div>
         )}
       </section>
-      {home && (
-        <section className="kitchen-invitation shell">
-          <div>
-            <span className="eyebrow">A LITTLE DINNER INSPIRATION</span>
-            <h2>Your catch. Your kind of cooking.</h2>
-            <p>
-              Choose the cuisine, spice and ingredients you love. Our AI kitchen
-              helps you turn a pack of prawns into a plan for dinner.
-            </p>
-            <Link className="button" href="/cook">
-              Find my recipe ↗
-            </Link>
-          </div>
-          <div className="kitchen-options" aria-hidden="true">
-            <span>Bengali curry</span>
-            <span>A quick grill</span>
-            <span>Something mild</span>
-            <span>Your own twist</span>
-          </div>
-        </section>
-      )}
-      {home && (
-        <section className="story-feature shell">
-          <div className="story-image">
-            <Image
-              src="/images/skewers.jpeg"
-              alt="Prawn skewers ready for cooking"
-              fill
-
-              sizes="(max-width: 760px) 100vw, 50vw"
-            />
-          </div>
-          <div className="story-copy">
-            <span className="eyebrow">ROOTED IN BENGAL</span>
-            <h2>
-              A coastal heart.
-              <br />A place at your table.
-            </h2>
-            <p>
-              Our love for seafood starts in Bengal. We bring that love to a
-              carefully chosen collection of prawns, made for home cooks and
-              professional kitchens alike.
-            </p>
-            <Link className="text-link" href="/our-story">
-              Get to know Wave of Bengal ↗
-            </Link>
-          </div>
-        </section>
-      )}
+      <BagBar />
     </>
   );
 }

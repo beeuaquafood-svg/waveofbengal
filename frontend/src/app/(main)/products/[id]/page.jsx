@@ -6,6 +6,11 @@ import Image from "next/image";
 import { useCatalogue, ProductCard } from "@/components/storefront/Shop";
 import { useCart } from "@/contexts/CartContext";
 import { money } from "@/lib/catalog";
+import {
+  SnowflakeIcon,
+  BoxIcon,
+  TruckIcon,
+} from "@/components/storefront/icons";
 
 function Product({ product, related }) {
   const [sizeId, setSizeId] = useState(product.sizes[0].id);
@@ -122,6 +127,20 @@ function Product({ product, related }) {
             <br />
             Estimated tax shown in your bag.
           </p>
+          <ul className="wc-assurances" aria-label="What to expect">
+            <li>
+              <SnowflakeIcon width={22} height={22} />
+              <span>Individually quick-frozen</span>
+            </li>
+            <li>
+              <BoxIcon width={22} height={22} />
+              <span>Insulated cold-chain packing</span>
+            </li>
+            <li>
+              <TruckIcon width={22} height={22} />
+              <span>Free delivery over ₹2,000</span>
+            </li>
+          </ul>
           <Link className="recipe-product-link" href="/cook">
             <span>Not sure what to cook?</span>
             <strong>Find a recipe in our AI kitchen ↗</strong>
