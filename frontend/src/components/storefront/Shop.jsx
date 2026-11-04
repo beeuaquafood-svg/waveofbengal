@@ -13,10 +13,8 @@ import { useCart } from "@/contexts/CartContext";
 import { ArrowIcon, BagIcon } from "./icons";
 import {
   Hero,
-  Marquee,
   Paths,
   WhyWave,
-  HowItWorks,
   CookInvite,
   Story,
 } from "./HomeSections";
@@ -182,7 +180,6 @@ export default function Shop({ home = false, initialCategory = "All" }) {
     return (
       <>
         <Hero products={products} />
-        <Marquee />
         <Paths />
         <section
           className="shell wc-section"
@@ -191,25 +188,21 @@ export default function Shop({ home = false, initialCategory = "All" }) {
           <div className="wc-section-head">
             <div>
               <span className="wc-kicker">A TASTE OF THE COAST</span>
-              <h2 id="featured-heading">Your next favourite meal.</h2>
+              <h2 id="featured-heading">The signature selection.</h2>
               <p>From a simple supper to the centre of the table.</p>
             </div>
             <Link className="wc-link" href="/products">
-              Explore all {products.length} <ArrowIcon />
+              View the collection <ArrowIcon />
             </Link>
           </div>
           <div className="product-grid wc-grid">
             {products.slice(0, 3).map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
-            <Link className="wc-all-tile" href="/products">
-              <span>All {products.length} selections</span>
-              <ArrowIcon width={32} height={32} />
-            </Link>
+
           </div>
         </section>
         <WhyWave />
-        <HowItWorks />
         <CookInvite />
         <Story />
         <BagBar />

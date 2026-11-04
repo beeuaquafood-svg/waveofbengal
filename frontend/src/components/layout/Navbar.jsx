@@ -16,37 +16,8 @@ const links = [
 ];
 
 // Only claims the store already makes elsewhere (shipping, product copy).
-const ticker = [
-  ["Free delivery on orders ₹2,000+", "/shipping"],
-  ["Individually quick-frozen", null],
-  ["Packed for the cold chain", null],
-  ["From the coast of Bengal", "/our-story"],
-  ["Cook with AI", "/cook"],
-];
-
 function Ticker() {
-  const row = (hidden) => (
-    <ul className="wc-ticker-row" aria-hidden={hidden || undefined}>
-      {ticker.map(([text, href]) => (
-        <li key={text}>
-          {href && !hidden ? (
-            <Link href={href}>{text}</Link>
-          ) : (
-            <span>{text}</span>
-          )}
-          <i aria-hidden="true" />
-        </li>
-      ))}
-    </ul>
-  );
-  return (
-    <div className="wc-ticker" role="region" aria-label="Store announcements">
-      <div className="wc-ticker-track">
-        {row(false)}
-        {row(true)}
-      </div>
-    </div>
-  );
+  return <div className="boutique-announcement"><span>Savour the finest.</span><Link href="/shipping">Complimentary delivery on orders ₹2,000+ <span aria-hidden="true">→</span></Link></div>;
 }
 
 export default function Navbar() {

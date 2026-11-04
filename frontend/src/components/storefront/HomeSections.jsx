@@ -13,128 +13,16 @@ const lowest = (product) => Math.min(...product.sizes.map((s) => s.price));
 
 export function Hero({ products }) {
   const from = products.length ? Math.min(...products.map(lowest)) : null;
-  const flagship = products.find((p) => p.id === "black-tiger-prawns");
-  return (
-    <section className="wc-hero" aria-labelledby="hero-heading">
-      <div className="shell wc-hero-inner">
-        <div className="wc-hero-copy">
-          <span className="wc-kicker">
-            WAVE OF BENGAL · THE PRAWN COLLECTION
-          </span>
-          <h1 id="hero-heading">
-            Bring the coast <em>to your table.</em>
-          </h1>
-          <p>
-            Prawns for a quick supper, a family favourite, or something worth
-            celebrating. Find your catch. Choose your pack. Make it delicious.
-          </p>
-          <div className="wc-hero-actions">
-            <Link className="button wc-btn wc-btn-coral" href="/products">
-              Shop the catch <ArrowIcon />
-            </Link>
-            <Link className="wc-btn wc-btn-ghost" href="/cook">
-              Cook with AI
-            </Link>
-          </div>
-          <ul className="wc-hero-facts" aria-label="At a glance">
-            <li>
-              <strong>{products.length}</strong>
-              <span>selections</span>
-            </li>
-            {from && (
-              <li>
-                <strong>{money(from)}</strong>
-                <span>packs from</span>
-              </li>
-            )}
-            <li>
-              <strong>Free</strong>
-              <span>delivery ₹2,000+</span>
-            </li>
-          </ul>
-        </div>
-        <div className="wc-hero-visual">
-          <div className="wc-hero-photo">
-            <Image
-              src="/images/black%20tiger.jpeg"
-              alt="Raw Black Tiger Prawns arranged with herbs and citrus"
-              fill
-              priority
-              sizes="(max-width: 900px) 92vw, 46vw"
-            />
-          </div>
-          <svg
-            className="wc-sticker"
-            viewBox="0 0 120 120"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <defs>
-              <path
-                id="wc-sticker-path"
-                d="M60,60 m-45,0 a45,45 0 1,1 90,0 a45,45 0 1,1 -90,0"
-              />
-            </defs>
-            <circle cx="60" cy="60" r="58" className="wc-sticker-bg" />
-            <text className="wc-sticker-text">
-              <textPath
-                href="#wc-sticker-path"
-                textLength="276"
-                lengthAdjust="spacing"
-              >
-                FRESH ✦ FROZEN AT PEAK ✦ FROM BENGAL ✦
-              </textPath>
-            </text>
-            <path
-              className="wc-sticker-mark"
-              d="M34 62c8-10 14-10 22 0s14 10 22 0 10-8 14-6M34 74c8-10 14-10 22 0s14 10 22 0 10-8 14-6"
-            />
-          </svg>
-          {flagship && (
-            <Link className="wc-hero-tag" href={`/products/${flagship.id}`}>
-              <small>The signature selection</small>
-              <strong>{flagship.name}</strong>
-              <span>
-                from {money(lowest(flagship))} <ArrowIcon />
-              </span>
-            </Link>
-          )}
-        </div>
+  return <>
+    <section className="boutique-hero" aria-labelledby="hero-heading">
+      <div className="shell boutique-hero-top"><span className="wc-kicker">BENGAL’S COAST. YOUR TABLE.</span><span className="boutique-signature">The art of good seafood</span></div>
+      <div className="shell boutique-hero-grid">
+        <div className="boutique-hero-copy"><span className="boutique-rule" aria-hidden="true"/><h1 id="hero-heading">A taste of the coast.<br/><em>A little extraordinary.</em></h1><p>Beautiful prawns. Familiar flavours. Discover a carefully chosen collection for everyday meals and tables worth gathering around.</p><div className="boutique-hero-actions"><Link className="button boutique-gold" href="/products">Explore our catch <ArrowIcon /></Link><Link className="wc-link" href="/our-story">Our Bengal story →</Link></div><div className="boutique-hero-note"><span>{from ? `Packs from ${money(from)}` : 'Choose your perfect pack'}</span><i aria-hidden="true"/><span>Pack sizes for every table</span></div></div>
+        <div className="boutique-scene"><Image src="/images/coastal-boutique.webp" alt="Illustrated Wave of Bengal seafood boutique beside the sea, with a navy and gold shopfront and lighthouse" width={1672} height={941} priority sizes="(max-width: 850px) 100vw, 62vw"/><div className="boutique-scene-caption"><span>A coastal state of mind.</span><span>WAVE OF BENGAL</span></div></div>
       </div>
     </section>
-  );
-}
-
-const marquee = [
-  "Prawns",
-  "Ready-to-Cook",
-  "Trial Packs",
-  "Signature Dishes",
-  "Chef’s Specials",
-];
-export function Marquee() {
-  const row = (hidden) => (
-    <ul className="wc-marquee-row" aria-hidden={hidden || undefined}>
-      {marquee.map((t) => (
-        <li key={t}>
-          {t}
-          <i aria-hidden="true" />
-        </li>
-      ))}
-    </ul>
-  );
-  return (
-    <div
-      className="wc-marquee"
-      aria-label="Categories: Prawns, Ready-to-Cook, Trial Packs, Signature Dishes, Chef’s Specials"
-      role="img"
-    >
-      <div className="wc-marquee-track">
-        {row(false)}
-        {row(true)}
-      </div>
-    </div>
-  );
+    <div className="boutique-service shell"><span><SnowflakeIcon/> Individually quick-frozen</span><span><BoxIcon/> Packed for the journey</span><Link href="/shipping"><ShieldIcon/> Delivery & care information →</Link></div>
+  </>;
 }
 
 const paths = [
@@ -160,7 +48,7 @@ export function Paths() {
       <div className="wc-section-head">
         <div>
           <span className="wc-kicker">WHAT’S ON YOUR MENU?</span>
-          <h2 id="paths-heading">A catch for every kind of cook.</h2>
+          <h2 id="paths-heading">What’s on your menu?</h2>
         </div>
       </div>
       <div className="wc-paths">
@@ -201,8 +89,8 @@ const reasons = [
   },
   {
     icon: ShieldIcon,
-    title: "Certified standards",
-    copy: "FSSAI, HACCP, MPEDA and FDA compliance.",
+    title: "Quality, explained",
+    copy: "Explore our sourcing and certification information.",
     href: "/certifications",
     cta: "See certifications",
   },
@@ -221,7 +109,7 @@ export function WhyWave() {
         <div className="wc-section-head">
           <div>
             <span className="wc-kicker">WHY WAVE OF BENGAL</span>
-            <h2 id="why-heading">Good seafood. No guesswork.</h2>
+            <h2 id="why-heading">Care in every detail.</h2>
           </div>
         </div>
         <ul className="wc-why-grid">
@@ -285,7 +173,7 @@ export function CookInvite() {
       <div className="wc-cook">
         <div>
           <span className="wc-kicker">A LITTLE DINNER INSPIRATION</span>
-          <h2 id="cook-heading">Your catch. Your kind of cooking.</h2>
+          <h2 id="cook-heading">A little inspiration for tonight.</h2>
           <p>
             Choose the cuisine, spice and ingredients you love. Our AI kitchen
             helps you turn a pack of prawns into a plan for dinner.

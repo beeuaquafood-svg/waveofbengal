@@ -14,11 +14,11 @@ export default function Footer() {
         <section className="wc-join" aria-labelledby="join-heading">
           <div className="shell wc-join-inner">
             <div>
-              <span className="wc-kicker">THE WAVE COLLECTIVE</span>
+              <span className="wc-kicker">LETTERS FROM THE COAST</span>
               <h2 id="join-heading">
-                Join the wave.
+                A little closer
                 <br />
-                Eat well.
+                to the coast.
               </h2>
             </div>
             <div className="newsletter-block">
