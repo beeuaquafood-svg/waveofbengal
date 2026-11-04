@@ -2,7 +2,31 @@
 import { useCart } from "@/contexts/CartContext";
 import Link from "next/link";
 import { money, totals } from "@/lib/catalog";
-export default function OrderSummary({ children }) {
+export const FREE_DELIVERY_AT = 2000;
+
+// Shows progress toward free delivery. Same threshold the totals use.
+export function DeliveryMeter({ total }) {
+  if (!(total > 0)) return null;
+  const left = FREE_DELIVERY_AT - total;
+  return (
+    <div
+      className="delivery-progress wc-meter"
+      data-done={left <= 0 || undefined}
+    >
+      <p className="delivery-note">
+        {left > 0
+          ? `You’re ${money(left)} away from free delivery.`
+          : "You’ve unlocked free delivery."}
+      </p>
+      <progress
+        value={Math.min(total, FREE_DELIVERY_AT)}
+        max={FREE_DELIVERY_AT}
+        aria-label="Progress toward free delivery"
+      />
+    </div>
+  );
+}
+export default function OrderSummary({ children, meter = true }) {
   const { cart, cartTotal } = useCart();
   const { shipping, tax, total } = totals(cartTotal);
   return (
@@ -40,17 +64,8 @@ export default function OrderSummary({ children }) {
           <dd>{money(total)}</dd>
         </div>
       </dl>
-      {cartTotal < 2000 && cartTotal > 0 && (
-        <div className="delivery-progress">
-          <p className="delivery-note">
-            You’re {money(2000 - cartTotal)} away from free delivery.
-          </p>
-          <progress
-            value={cartTotal}
-            max={2000}
-            aria-label="Progress toward free delivery"
-          />
-        </div>
+      {meter && cartTotal < FREE_DELIVERY_AT && (
+        <DeliveryMeter total={cartTotal} />
       )}
       {children}
     </aside>

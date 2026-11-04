@@ -69,7 +69,7 @@ export default function Checkout() {
   }
   return (
     <div className="shell checkout-page">
-      <CheckoutSteps step={step} />
+      <CheckoutSteps step={ready && !cart.length ? 1 : step} />
       <div className="section-heading">
         <div>
           <span className="eyebrow">ALMOST AT THE TABLE</span>

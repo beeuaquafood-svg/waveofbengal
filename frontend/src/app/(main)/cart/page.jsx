@@ -5,9 +5,11 @@ import { useCart } from "@/contexts/CartContext";
 import { money } from "@/lib/catalog";
 import OrderSummary, {
   CheckoutSteps,
+  DeliveryMeter,
 } from "@/components/storefront/OrderSummary";
 export default function Cart() {
-  const { cart, ready, cartCount, updateQuantity, removeFromCart } = useCart();
+  const { cart, ready, cartCount, cartTotal, updateQuantity, removeFromCart } =
+    useCart();
   return (
     <div className="shell bag-page">
       <CheckoutSteps />
@@ -38,6 +40,7 @@ export default function Cart() {
       ) : (
         <div className="commerce-grid">
           <div className="bag-items">
+            <DeliveryMeter total={cartTotal} />
             {cart.map((item) => (
               <article className="bag-item" key={item.key}>
                 <Link href={`/products/${item.id}`} className="bag-image">
@@ -95,7 +98,7 @@ export default function Cart() {
               </article>
             ))}
           </div>
-          <OrderSummary>
+          <OrderSummary meter={false}>
             <Link className="button wide" href="/checkout">
               Continue to delivery →
             </Link>
