@@ -19,9 +19,9 @@ export function Hero({ products }) {
         <Image src="/images/coastal-boutique.webp" alt="The Wave of Bengal seafood counter beneath its striped awning on the waterfront" fill priority sizes="100vw" />
       </div>
       <div className="market-invitation shell">
-        <div><span className="wc-kicker">WAVE OF BENGAL · SEAFOOD BOUTIQUE</span>
-          <h1 id="hero-heading">The prawn counter</h1>
-          <p>From black tiger prawns to garlic butter favourites.</p>
+        <div><span className="wc-kicker">THE COASTAL COLLECTION</span>
+          <h1 id="hero-heading">The Bengal<br/><em>prawn counter.</em></h1>
+          <p>Black tiger prawns, marinated favourites and smaller tasting packs.</p>
         </div>
         <a className="market-enter" href="#catch-counter">Shop prawns <ArrowIcon /></a>
         {from !== null && <small>Packs from {money(from)}</small>}

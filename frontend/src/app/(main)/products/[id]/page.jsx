@@ -6,12 +6,6 @@ import Image from "next/image";
 import { useCatalogue, ProductCard } from "@/components/storefront/Shop";
 import { useCart } from "@/contexts/CartContext";
 import { money } from "@/lib/catalog";
-import {
-  SnowflakeIcon,
-  BoxIcon,
-  TruckIcon,
-} from "@/components/storefront/icons";
-
 function Product({ product, related }) {
   const [sizeId, setSizeId] = useState(product.sizes[0].id);
   const [quantity, setQuantity] = useState(1);
@@ -44,12 +38,17 @@ function Product({ product, related }) {
           <span className="eyebrow">THE WAVE OF BENGAL COLLECTION</span>
           <h1>{product.name}</h1>
           <p className="detail-description">{product.description}</p>
+          <dl className="catch-specs">
+            <div><dt>Collection</dt><dd>{product.category}</dd></div>
+            <div><dt>Selected pack</dt><dd>{size.label}</dd></div>
+            <div><dt>Packing</dt><dd>Insulated</dd></div>
+          </dl>
           <div className="detail-price">
             {money(size.price)}
             <span> / {size.label}</span>
           </div>
           <fieldset className="pack-picker">
-            <legend>1. Choose your pack</legend>
+            <legend>Pack size</legend>
             <div>
               {product.sizes.map((s) => (
                 <button
@@ -68,13 +67,13 @@ function Product({ product, related }) {
               ))}
             </div>
           </fieldset>
-          <p className="purchase-label">2. Choose quantity & add to bag</p>
+          <p className="purchase-label">Quantity</p>
           <div className="purchase-row">
             <div className="quantity-control">
               <button
                 aria-label="Decrease quantity"
                 disabled={quantity === 1}
-                onClick={() => setQuantity(quantity - 1)}
+                onClick={() => { setQuantity(quantity - 1); setAdded(false); }}
               >
                 −
               </button>
@@ -82,7 +81,7 @@ function Product({ product, related }) {
               <button
                 aria-label="Increase quantity"
                 disabled={quantity === Math.min(20, product.stock ?? 20)}
-                onClick={() => setQuantity(quantity + 1)}
+                onClick={() => { setQuantity(quantity + 1); setAdded(false); }}
               >
                 +
               </button>
@@ -127,20 +126,6 @@ function Product({ product, related }) {
             <br />
             Estimated tax shown in your bag.
           </p>
-          <ul className="wc-assurances" aria-label="What to expect">
-            <li>
-              <SnowflakeIcon width={22} height={22} />
-              <span>Individually quick-frozen</span>
-            </li>
-            <li>
-              <BoxIcon width={22} height={22} />
-              <span>Insulated cold-chain packing</span>
-            </li>
-            <li>
-              <TruckIcon width={22} height={22} />
-              <span>Free delivery over ₹2,000</span>
-            </li>
-          </ul>
           <Link className="recipe-product-link" href="/cook">
             <span>Not sure what to cook?</span>
             <strong>Find a recipe in our AI kitchen ↗</strong>
