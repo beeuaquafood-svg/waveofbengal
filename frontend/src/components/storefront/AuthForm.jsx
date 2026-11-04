@@ -127,10 +127,10 @@ export default function AuthForm({ register = false }) {
       <div className="auth-panel">
         <Link href="/home" className="brand">
           <Image
-            src="/images/WOB-black-4.png"
+            src="/images/wave-of-bengal-logo.png"
             alt="Wave of Bengal home"
-            width={170}
-            height={55}
+            width={1413}
+            height={768}
           />
         </Link>
         <div className="auth-form">

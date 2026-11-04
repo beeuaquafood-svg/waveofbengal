@@ -151,10 +151,14 @@
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
+  padding: 4px;
+  border-radius: 8px;
+  background: #06262c;
 }
 .brand img {
-  width: 166px;
-  height: 54px;
+  width: 140px;
+  height: auto;
+  max-height: 76px;
   object-fit: contain;
 }
 .desktop-nav,
@@ -491,9 +495,16 @@
   padding-bottom: 45px;
 }
 .footer-wordmark {
+  display: block;
+  width: min(240px, 100%);
   font-size: 27px;
   font-weight: 500;
   letter-spacing: -0.05em;
+}
+.footer-wordmark img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 .footer-wordmark span {
   display: block;
@@ -926,6 +937,10 @@
 }
 .auth-panel > .brand {
   margin-bottom: 45px;
+  width: max-content;
+  padding: 6px;
+  border-radius: 8px;
+  background: #06262c;
 }
 .auth-form {
   width: 100%;
@@ -1129,8 +1144,8 @@
     gap: 12px;
   }
   .brand img {
-    width: 137px;
-    height: 44px;
+    width: 112px;
+    max-height: 62px;
   }
   .desktop-nav {
     display: none;

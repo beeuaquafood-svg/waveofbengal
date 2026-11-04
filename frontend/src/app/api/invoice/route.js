@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 export async function GET(req) {
     const { searchParams } = new URL(req.url);
+    const logoUrl = new URL('/images/wave-of-bengal-logo.png', req.url).toString();
     const orderNumber = searchParams.get('orderNumber') || '#WOB-' + Math.floor(100000 + Math.random() * 900000);
     const email = searchParams.get('email') || 'customer@example.com';
     const total = searchParams.get('total') || '2,450';
@@ -38,10 +39,13 @@ export async function GET(req) {
             margin-bottom: 24px;
         }
         .logo {
-            font-size: 24px;
-            font-weight: 800;
-            color: #0f172a;
-            letter-spacing: 1px;
+            display: block;
+            width: 160px;
+            height: auto;
+            padding: 6px;
+            border-radius: 8px;
+            background: #06262c;
+            margin-bottom: 8px;
         }
         .tagline {
             font-size: 11px;
@@ -143,7 +147,7 @@ export async function GET(req) {
     <div class="invoice-box">
         <div class="header">
             <div>
-                <div class="logo">WAVE OF BENGAL</div>
+                <img class="logo" src="${logoUrl}" alt="Wave of Bengal">
                 <div class="tagline">Premium Artisanal Seafood</div>
                 <div style="font-size: 12px; color: #64748b; margin-top: 6px;">
                     GSTIN: 19AAACW1234F1Z8<br>

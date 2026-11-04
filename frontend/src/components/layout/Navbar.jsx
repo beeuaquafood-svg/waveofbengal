@@ -34,12 +34,11 @@ export default function Navbar() {
       <div className="nav-inner">
         <Link href="/home" className="brand" aria-label="Wave of Bengal home">
           <Image
-            src="/icons/logo.svg"
+            src="/images/wave-of-bengal-logo.png"
             alt="Wave of Bengal"
-            width={166}
-            height={54}
+            width={1413}
+            height={768}
             priority
-            unoptimized
           />
         </Link>
         <nav className="desktop-nav" aria-label="Main navigation">

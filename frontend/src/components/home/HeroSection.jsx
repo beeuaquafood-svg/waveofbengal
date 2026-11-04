@@ -56,11 +56,11 @@ export default function HeroSection() {
                     className="-mb-8"
                 >
                     <Image
-                        src="/images/wob-crest.png"
-                        alt="Wave of Bengal Crest"
-                        width={800}
-                        height={800}
-                        className="drop-shadow-2xl"
+                        src="/images/wave-of-bengal-logo-tagline.png"
+                        alt="Wave of Bengal — savour the finest"
+                        width={1234}
+                        height={768}
+                        className="w-[min(75vw,680px)] h-auto drop-shadow-2xl"
                     />
                 </motion.div>
 

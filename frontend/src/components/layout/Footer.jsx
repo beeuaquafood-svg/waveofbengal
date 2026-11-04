@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import SupportForm from "@/components/storefront/SupportForm";
 export default function Footer() {
   return (
@@ -23,7 +24,12 @@ export default function Footer() {
       <div className="shell footer-links">
         <div>
           <Link href="/home" className="footer-wordmark">
-            Wave of Bengal<span>SEAFOOD, WITH A COASTAL SOUL.</span>
+            <Image
+              src="/images/wave-of-bengal-logo.png"
+              alt="Wave of Bengal home"
+              width={1413}
+              height={768}
+            />
           </Link>
           <p>From our coast to your kitchen.</p>
         </div>

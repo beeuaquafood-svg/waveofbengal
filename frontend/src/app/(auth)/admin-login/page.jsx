@@ -157,10 +157,11 @@ export default function AdminLogin() {
                     <div className="flex flex-col items-center mb-8">
                         <Link href="/" className="mb-5 hover:opacity-80 transition-opacity">
                             <Image
-                                src="/images/WOB-black-4.png"
-                                alt="Wave of Bengal Logo"
-                                width={180} height={60} quality={100} unoptimized
-                                className="object-contain h-10 w-auto invert drop-shadow-[0_2px_10px_rgba(255,255,255,0.15)]"
+                                src="/images/wave-of-bengal-logo.png"
+                                alt="Wave of Bengal"
+                                width={1413}
+                                height={768}
+                                className="h-auto w-36 rounded-md bg-[#06262c] p-1 object-contain drop-shadow-[0_2px_10px_rgba(255,255,255,0.15)]"
                                 priority
                             />
                         </Link>

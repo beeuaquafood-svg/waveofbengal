@@ -45,9 +45,9 @@ export default function LandingPage({ onEnter }) {
                     {/* Logo */}
                     <div className="w-full max-w-sm sm:max-w-md md:max-w-lg px-2 flex justify-center">
                         <Image
-                            src="/images/Wave of Bengal Logo.png"
-                            alt="Wave of Bengal Logo"
-                            width={1920} height={1080} quality={100} unoptimized
+                            src="/images/wave-of-bengal-logo-tagline.png"
+                            alt="Wave of Bengal — savour the finest"
+                            width={1234} height={768} quality={100}
                             className="object-contain w-full h-auto max-h-[48vh] mix-blend-screen"
                             priority
                         />

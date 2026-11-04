@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
 
@@ -18,13 +19,15 @@ export default function AdminSidebar() {
         <>
             <div className="hidden md:flex flex-col w-64 h-screen fixed top-0 left-0 bg-black/40 backdrop-blur-lg border-r border-white/10 shadow-2xl z-40 transition-all">
                 <div className="p-6">
-                    <Link href="/">
-                        <h2 className="text-2xl font-fraunces font-medium tracking-wide text-white mb-8 flex items-center gap-2 drop-shadow-md">
-                            <svg className="w-8 h-8 text-white/80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                            </svg>
-                            Admin Panel
-                        </h2>
+                    <Link href="/home" className="mb-8 flex flex-col items-start gap-2">
+                        <Image
+                            src="/images/wave-of-bengal-logo.png"
+                            alt="Wave of Bengal home"
+                            width={1413}
+                            height={768}
+                            className="h-auto w-36 object-contain"
+                        />
+                        <span className="text-sm font-medium tracking-wide text-white/70">Admin Panel</span>
                     </Link>
                     <nav className="space-y-3">
                         {navItems.map((item) => {

@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
 export async function POST(req) {
     try {
@@ -61,9 +63,7 @@ export async function POST(req) {
         
         <!-- Header Banner -->
         <div style="background: linear-gradient(135deg, #09203f 0%, #1c3b57 100%); padding: 36px 32px; text-align: center; color: #ffffff;">
-            <div style="letter-spacing: 4px; font-size: 11px; text-transform: uppercase; color: #f59e0b; font-weight: bold; margin-bottom: 8px;">
-                ⚓ WAVE OF BENGAL • ARTISANAL SEAFOOD
-            </div>
+            <img src="cid:wob-brand" alt="Wave of Bengal" width="170" style="display:block;width:170px;height:auto;margin:0 auto 16px;padding:6px;border-radius:8px;background:#06262c;">
             <h1 style="margin: 0; font-size: 26px; font-weight: 700; color: #ffffff;">
                 Order Confirmed!
             </h1>
@@ -158,11 +158,17 @@ export async function POST(req) {
                 },
             });
 
+            const logo = await readFile(join(process.cwd(), 'public', 'images', 'wave-of-bengal-logo.png'));
             const mailOptions = {
                 from: `"Wave of Bengal" <${gmailUser}>`,
                 to: email,
                 subject: `Order Confirmation: ${orderNumber} — Wave of Bengal`,
                 html: emailHtml,
+                attachments: [{
+                    filename: 'wave-of-bengal-logo.png',
+                    content: logo,
+                    cid: 'wob-brand',
+                }],
             };
 
             await transporter.sendMail(mailOptions);
