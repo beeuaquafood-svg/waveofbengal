@@ -13,62 +13,18 @@ const lowest = (product) => Math.min(...product.sizes.map((s) => s.price));
 
 export function Hero({ products }) {
   const from = products.length ? Math.min(...products.map(lowest)) : null;
-  return <>
-    <section className="boutique-hero" aria-labelledby="hero-heading">
-      <div className="shell boutique-hero-top"><span className="wc-kicker">BENGAL’S COAST. YOUR TABLE.</span><span className="boutique-signature">The art of good seafood</span></div>
-      <div className="shell boutique-hero-grid">
-        <div className="boutique-hero-copy"><span className="boutique-rule" aria-hidden="true"/><h1 id="hero-heading">A taste of the coast.<br/><em>A little extraordinary.</em></h1><p>Beautiful prawns. Familiar flavours. Discover a carefully chosen collection for everyday meals and tables worth gathering around.</p><div className="boutique-hero-actions"><Link className="button boutique-gold" href="/products">Explore our catch <ArrowIcon /></Link><Link className="wc-link" href="/our-story">Our Bengal story →</Link></div><div className="boutique-hero-note"><span>{from ? `Packs from ${money(from)}` : 'Choose your perfect pack'}</span><i aria-hidden="true"/><span>Pack sizes for every table</span></div></div>
-        <div className="boutique-scene"><Image src="/images/coastal-boutique.webp" alt="Illustrated Wave of Bengal seafood boutique beside the sea, with a navy and gold shopfront and lighthouse" width={1672} height={941} priority sizes="(max-width: 850px) 100vw, 62vw"/><div className="boutique-scene-caption"><span>A coastal state of mind.</span><span>WAVE OF BENGAL</span></div></div>
-      </div>
-    </section>
-    <div className="boutique-service shell"><span><SnowflakeIcon/> Individually quick-frozen</span><span><BoxIcon/> Packed for the journey</span><Link href="/shipping"><ShieldIcon/> Delivery & care information →</Link></div>
-  </>;
-}
-
-const paths = [
-  ["01", "Keep it classic", "Prawns to cook your way.", "Prawns", "coral"],
-  [
-    "02",
-    "Make dinner easy",
-    "Explore ready-to-cook favourites.",
-    "Ready-to-Cook",
-    "lemon",
-  ],
-  [
-    "03",
-    "Try something new",
-    "Start with a smaller selection.",
-    "Trial Packs",
-    "sea",
-  ],
-];
-export function Paths() {
   return (
-    <section className="shell wc-section" aria-labelledby="paths-heading">
-      <div className="wc-section-head">
-        <div>
-          <span className="wc-kicker">WHAT’S ON YOUR MENU?</span>
-          <h2 id="paths-heading">What’s on your menu?</h2>
-        </div>
+    <section className="market-front" aria-labelledby="hero-heading">
+      <div className="market-window">
+        <Image src="/images/coastal-boutique.webp" alt="The Wave of Bengal seafood counter beneath its striped awning on the waterfront" fill priority sizes="100vw" />
       </div>
-      <div className="wc-paths">
-        {paths.map(([number, title, copy, category, tone]) => (
-          <Link
-            key={category}
-            className="wc-path"
-            data-tone={tone}
-            href={`/products?category=${encodeURIComponent(category)}`}
-          >
-            <span className="wc-path-number">{number}</span>
-            <div>
-              <h3>{title}</h3>
-              <p>{copy}</p>
-            </div>
-            <span className="wc-path-go" aria-hidden="true">
-              <ArrowIcon />
-            </span>
-          </Link>
-        ))}
+      <div className="market-invitation shell">
+        <div><span className="wc-kicker">WAVE OF BENGAL · SEAFOOD BOUTIQUE</span>
+          <h1 id="hero-heading">The prawn counter</h1>
+          <p>From black tiger prawns to garlic butter favourites.</p>
+        </div>
+        <a className="market-enter" href="#catch-counter">Shop prawns <ArrowIcon /></a>
+        {from !== null && <small>Packs from {money(from)}</small>}
       </div>
     </section>
   );

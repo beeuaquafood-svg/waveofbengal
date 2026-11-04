@@ -10,10 +10,9 @@ import {
   normalizeProduct,
 } from "@/lib/catalog";
 import { useCart } from "@/contexts/CartContext";
-import { ArrowIcon, BagIcon } from "./icons";
+import { BagIcon } from "./icons";
 import {
   Hero,
-  Paths,
   WhyWave,
   CookInvite,
   Story,
@@ -122,10 +121,10 @@ export function ProductCard({ product }) {
               aria-label={`Quick add ${product.name}, ${size.label}`}
               onClick={quickAdd}
             >
-              {unavailable ? "Sold out" : added ? "Added ✓" : "+ Add"}
+              {unavailable ? "Sold out" : added ? "Added ✓" : "Add to bag"}
             </button>
           </div>
-          <span className="sr-only" role="status">
+          <span className={added ? "market-confirm" : "sr-only"} role="status">
             {added ? `${product.name}, ${size.label} added to your bag.` : ""}
           </span>
         </div>
@@ -176,41 +175,9 @@ export default function Shop({ home = false, initialCategory = "All" }) {
     setCategory("All");
   };
 
-  if (home)
-    return (
-      <>
-        <Hero products={products} />
-        <Paths />
-        <section
-          className="shell wc-section"
-          aria-labelledby="featured-heading"
-        >
-          <div className="wc-section-head">
-            <div>
-              <span className="wc-kicker">A TASTE OF THE COAST</span>
-              <h2 id="featured-heading">The signature selection.</h2>
-              <p>From a simple supper to the centre of the table.</p>
-            </div>
-            <Link className="wc-link" href="/products">
-              View the collection <ArrowIcon />
-            </Link>
-          </div>
-          <div className="product-grid wc-grid">
-            {products.slice(0, 3).map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-
-          </div>
-        </section>
-        <WhyWave />
-        <CookInvite />
-        <Story />
-        <BagBar />
-      </>
-    );
-
   return (
     <>
+      {home ? <Hero products={products} /> : (
       <section className="wc-page-head">
         <div className="shell">
           <span className="wc-kicker">THE COLLECTION</span>
@@ -218,7 +185,10 @@ export default function Shop({ home = false, initialCategory = "All" }) {
           <p>Discover the selection. Pick a pack. Make it your own.</p>
         </div>
       </section>
-      <section className="shell wc-section wc-collection">
+      )}
+      <section id="catch-counter" className="shell wc-section wc-collection" aria-label="Shop the catch">
+        {home && <div className="market-counter-title"><span className="wc-kicker">OUR CATCH</span><h2>Choose your prawns</h2><p>Pick a pack and add it straight to your bag.</p></div>}
+        {(!home || products.length > 6) && (
         <div className="shop-tools wc-tools">
           <label className="search-field">
             <span aria-hidden="true">⌕</span>
@@ -238,6 +208,7 @@ export default function Shop({ home = false, initialCategory = "All" }) {
             </select>
           </label>
         </div>
+        )}
         <div
           className="filter-row wc-filters"
           role="group"
@@ -280,6 +251,7 @@ export default function Shop({ home = false, initialCategory = "All" }) {
           </div>
         )}
       </section>
+      {home && <><Story /><CookInvite /><WhyWave /></>}
       <BagBar />
     </>
   );
