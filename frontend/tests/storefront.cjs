@@ -120,8 +120,9 @@ const server = spawn(
       }
     }
     await page.goto("http://127.0.0.1:3100/home");
-    await page.getByRole("link", {name:/Try something new/}).click();
-    await page.waitForURL("**/products?category=Trial%20Packs");
+    await page.getByRole("link", {name:"Shop prawns",exact:true}).click();
+    await page.waitForURL("**/home#catch-counter");
+    await page.getByRole("button", {name:"Trial Packs",exact:true}).click();
     assert.equal(await page.locator(".product-card").count(),2);
     await page.getByRole("button", {name:"Clear filters ×",exact:true}).click();
     assert.equal(await page.locator(".product-card").count(),12);
