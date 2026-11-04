@@ -40,7 +40,7 @@ export function useCatalogue() {
  * the pack chips and quick-add sit above that link so a customer can pick a
  * pack and add it without leaving the grid.
  */
-export function ProductCard({ product }) {
+export function ProductCard({ product, signature = false }) {
   const { addToCart } = useCart();
   const [sizeId, setSizeId] = useState(product.sizes[0].id);
   const [added, setAdded] = useState(false);
@@ -48,6 +48,7 @@ export function ProductCard({ product }) {
   useEffect(() => () => clearTimeout(timer.current), []);
   const size = product.sizes.find((s) => s.id === sizeId) || product.sizes[0];
   const unavailable = product.stock === 0;
+  const Heading = signature ? "h1" : "h3";
   const single = product.sizes.length === 1;
 
   function quickAdd() {
@@ -67,25 +68,28 @@ export function ProductCard({ product }) {
   }
 
   return (
-    <article className="product-card wc-card">
-      <div className="product-photo wc-card-photo">
+    <article className={signature ? "signature-catch" : "product-card wc-card"}>
+      <div className={signature ? "signature-plate" : "product-photo wc-card-photo"}>
         <Image
           src={product.image}
-          alt=""
+          alt={signature ? product.name : ""}
+          priority={signature}
           fill
-          sizes="(max-width: 600px) 92vw, (max-width: 1000px) 46vw, 30vw"
+          sizes={signature ? "(max-width: 760px) 100vw, 55vw" : "(max-width: 600px) 92vw, (max-width: 1000px) 46vw, 30vw"}
           unoptimized={!product.image?.startsWith("/")}
         />
-        <span className="product-tag">{product.category}</span>
+        {signature ? <span className="signature-caption">The signature catch &nbsp; / &nbsp; No. 01</span> : <span className="product-tag">{product.category}</span>}
         {unavailable && <span className="wc-soldout">Unavailable</span>}
       </div>
-      <div className="wc-card-body">
-        <h3>
-          <Link className="wc-card-link" href={`/products/${product.id}`}>
+      <div className={signature ? "signature-copy" : "wc-card-body"}>
+        {signature && <span className="wc-kicker">THE BENGAL COLLECTION</span>}
+        <Heading>
+          <Link className={signature ? "signature-name" : "wc-card-link"} href={`/products/${product.id}`}>
             {product.name}
           </Link>
-        </h3>
+        </Heading>
         <p className="wc-card-desc">{product.description}</p>
+        {signature && <p className="signature-label">Select your pack</p>}
         <div className="wc-card-buy">
           {!single && (
             <div
@@ -128,6 +132,7 @@ export function ProductCard({ product }) {
             {added ? `${product.name}, ${size.label} added to your bag.` : ""}
           </span>
         </div>
+        {signature && <a className="signature-browse" href="#catch-counter">Shop prawns <span aria-hidden="true">↓</span></a>}
       </div>
     </article>
   );
@@ -175,9 +180,10 @@ export default function Shop({ home = false, initialCategory = "All" }) {
     setCategory("All");
   };
 
+  const signature = home && products.find((p) => p.id === "black-tiger-prawns" && p.stock !== 0);
   return (
     <>
-      {home ? <Hero products={products} /> : (
+      {home ? (signature ? <ProductCard product={signature} signature /> : <Hero products={products} />) : (
       <section className="wc-page-head">
         <div className="shell">
           <span className="wc-kicker">THE COLLECTION</span>
