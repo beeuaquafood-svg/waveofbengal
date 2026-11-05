@@ -45,6 +45,7 @@ export function ProductCard({ product, signature = false }) {
   const [sizeId, setSizeId] = useState(product.sizes[0].id);
   const [added, setAdded] = useState(false);
   const timer = useRef(null);
+  const [hasAdded, setHasAdded] = useState(false);
   useEffect(() => () => clearTimeout(timer.current), []);
   const size = product.sizes.find((s) => s.id === sizeId) || product.sizes[0];
   const unavailable = product.stock === 0;
@@ -63,6 +64,7 @@ export function ProductCard({ product, signature = false }) {
       1,
     );
     setAdded(true);
+    setHasAdded(true);
     clearTimeout(timer.current);
     timer.current = setTimeout(() => setAdded(false), 2200);
   }
@@ -131,6 +133,7 @@ export function ProductCard({ product, signature = false }) {
           <span className={added ? "market-confirm" : "sr-only"} role="status">
             {added ? `${product.name}, ${size.label} added to your bag.` : ""}
           </span>
+          {hasAdded && <Link className="collection-checkout" href="/cart">View bag & checkout <span aria-hidden="true">→</span></Link>}
         </div>
         {signature && <a className="signature-browse" href="#catch-counter">Shop prawns <span aria-hidden="true">↓</span></a>}
       </div>
@@ -193,7 +196,7 @@ export default function Shop({ home = false, initialCategory = "All" }) {
       </section>
       )}
       <section id="catch-counter" className="shell wc-section wc-collection" aria-label="Shop the catch">
-        {home && <div className="market-counter-title"><span className="wc-kicker">OUR CATCH</span><h2>Choose your prawns</h2><p>Pick a pack and add it straight to your bag.</p></div>}
+        {home && <div className="market-counter-title"><span className="wc-kicker">OUR CATCH</span><h2>A collection for your table.</h2><p>Choose your favourite. We’ll take care of the pack.</p></div>}
         {(!home || products.length > 6) && (
         <div className="shop-tools wc-tools">
           <label className="search-field">
