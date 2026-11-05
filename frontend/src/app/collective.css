@@ -2568,3 +2568,34 @@
 .storefront .signature-copy .wc-card-desc {font-size:14px}
 .storefront .signature-label {margin-top:14px}
 }
+
+/* Quiet collection surfaces and consistent focus feedback. */
+.storefront .product-card.wc-card {background:transparent;border:0;border-radius:0;overflow:visible;box-shadow:none}
+.storefront .product-card.wc-card:hover,.storefront .product-card.wc-card:focus-within {transform:none;box-shadow:none}
+.storefront .wc-card-photo {aspect-ratio:1.2;border:0}
+.storefront .wc-card-photo img {transition:transform .35s ease}
+.storefront .wc-card .product-tag {top:auto;bottom:12px;left:12px;background:#fcfaf5ed;border:0;border-radius:0;padding:7px 11px;font-size:10px;font-weight:500;letter-spacing:.12em}
+.storefront .wc-card-body {padding:22px 0 30px;gap:12px;border-bottom:1px solid #dcd5c8}
+.storefront .wc-card-body h3 {font-size:28px}
+.storefront .wc-card-link {text-decoration:none}
+.storefront .wc-card-desc {color:#586166}
+.storefront .wc-chips button {background:transparent;min-height:44px;border-radius:2px}
+.storefront .wc-add {min-height:44px;border-radius:2px}
+.storefront .collection-checkout {display:flex;justify-content:space-between;align-items:center;color:#07325a;font-size:13px;padding:10px 0;border-bottom:1px solid #b7a885;text-decoration:none}
+.storefront .collection-checkout:hover {color:#7c5a23}
+.storefront .signature-copy .wc-card-buy {padding-top:6px}
+.storefront .signature-copy .wc-card-desc {display:block;overflow:visible}
+.storefront .market-counter-title h2 {font-weight:400;letter-spacing:-.04em}
+.storefront .wc-filters {justify-content:center;gap:10px}
+.storefront .wc-filters .filter {background:transparent;border-color:transparent;border-bottom-color:#d4cbbc;border-radius:0;padding:10px 16px}
+.storefront .wc-filters .filter.active {background:transparent;color:#07325a;border-bottom:2px solid #07325a;font-weight:650}
+.storefront .wc-resultbar {border-bottom:1px solid #ded6c8;padding-bottom:14px;margin-bottom:26px}
+.storefront .wc-story-image {border:0;border-radius:0}
+.storefront .wc-cook {border-radius:0;border:0;padding:clamp(28px,5vw,64px)}
+.storefront .wc-cook-options {display:none}
+.storefront .wc-cook {grid-template-columns:1fr}
+.storefront .wc-join {padding-block:44px}
+.storefront :is(button,a,input,select):focus-visible {outline:2px solid #98732e;outline-offset:4px}
+@media(min-width:1000px){.storefront .product-grid.wc-grid{gap:42px 32px}.storefront .signature-copy{padding:54px clamp(36px,5vw,82px)}}
+@media(max-width:600px){.storefront .wc-filters{justify-content:flex-start}.storefront .wc-filters .filter{padding:10px 12px}.storefront .wc-card-body{padding-top:18px}.storefront .signature-copy h1{font-size:44px}.storefront .market-counter-title h2{font-size:36px}}
+@media(prefers-reduced-motion:reduce){.storefront .wc-card-photo img{transition:none}.storefront .product-card:hover .wc-card-photo img{transform:none}}
